@@ -194,16 +194,17 @@ async function updateStatus(id, status) {
 }
 
 async function saveBotLeads(Lead) {
-  const {
-    name = "",
-    location = "",
-    branch = "",
-    contact = "",
-    disease = "",
-    chat_whatsapp_branch = "",
-    consultation_type = "",
-    query = "",
-  } = Lead;
+  console.log("BOT LEAD:", Lead);
+  const vars = Lead.variables;
+
+  const name = vars.Name || "";
+  const location = vars.Location || "";
+  const branch = vars.Branch || "";
+  const contact = vars.Contact || data.phone || "";
+  const disease = vars.Disease || "";
+  const chatWhatsappBranch = vars.Chat_on_Whatsapp || "";
+  const consultationType = vars.Online_consultation || "";
+  const query = vars.Query || "";
 
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
@@ -230,8 +231,8 @@ async function saveBotLeads(Lead) {
         branch,
         contact,
         disease,
-        chat_whatsapp_branch,
-        consultation_type,
+        chatWhatsappBranch,
+        consultationType,
         query,
       ];
 
