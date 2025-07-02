@@ -194,8 +194,8 @@ async function updateStatus(id, status) {
 }
 
 async function saveBotLeads(Lead) {
-  console.log("BOT LEAD:", Lead);
-  const vars = Lead.contact.variables;
+  console.log("BOT LEAD:", Lead[0]);
+  const vars = Lead[0].contact.variables;
 
   const name = vars.Name || "";
   const location = vars.Location || "";
