@@ -194,17 +194,41 @@ async function updateStatus(id, status) {
 }
 
 async function saveBotLeads(Lead) {
-  console.log("BOT LEAD:", Lead[0]);
-  const vars = Lead[0].contact.variables;
+  const leadData = Array.isArray(Lead) ? Lead[0] : Lead;
+  console.log("BOT LEAD:", leadData);
 
-  const name = vars.Name || "";
-  const location = vars.Location || "";
-  const branch = vars.Branch || "";
-  const contact = vars.Contact || data.phone || "";
-  const disease = vars.Disease || "";
-  const chatWhatsappBranch = vars.Chat_on_Whatsapp || "";
-  const consultationType = vars.Online_consultation || "";
-  const query = vars.Query || "";
+  const service = leadData.service;
+  const variables = leadData.contact.variables || {};
+  let name = "";
+  let location = "";
+  let branch = "";
+  let contact = "";
+  let disease = "";
+  let chatWhatsappBranch = "";
+  let consultationType = "";
+  let query = "";
+
+  if (service === "live_chat") {
+    name = variables.Name || "";
+    location = variables.Location || "";
+    branch = variables.Branch || "";
+    contact = variables.Contact || leadData.contact.phone || "";
+    disease = variables.Disease || "";
+    chatWhatsappBranch = variables.Chat_on_Whatsapp || "";
+    consultationType = variables.Online_consultation || "";
+    query = variables.Query || "";
+  } else if (service === "whatsapp") {
+    name = leadData.contact.name || "";
+    contact = leadData.contact.phone || "";
+    location = ""; // Optional or default
+    branch = ""; // Optional or default
+    disease = ""; // Optional or default
+    chatWhatsappBranch = variables["Chat on Whatsapp"] || "";
+    consultationType = ""; // not provided in WhatsApp leads
+    query = variables.Query || "";
+  } else {
+    throw new Error("Unsupported lead service type.");
+  }
 
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
@@ -215,15 +239,13 @@ async function saveBotLeads(Lead) {
 
   return new Promise((resolve, reject) => {
     connection.getConnection(function (err, tempCon) {
-      if (err) {
-        return reject(err);
-      }
+      if (err) return reject(err);
 
       const sql = `
-    INSERT INTO chatbot_leads 
-    (datetime, name, location, branch, contact, disease, chat_whatsapp_branch, consultation_type, query)
-    VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+        INSERT INTO chatbot_leads 
+        (datetime, name, location, branch, contact, disease, chat_whatsapp_branch, consultation_type, query)
+        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
 
       const values = [
         name,
@@ -236,7 +258,7 @@ async function saveBotLeads(Lead) {
         query,
       ];
 
-      console.log(sql, values);
+      console.log("Executing SQL:", sql, values);
 
       tempCon.query(sql, values, function (error, result) {
         tempCon.release();
