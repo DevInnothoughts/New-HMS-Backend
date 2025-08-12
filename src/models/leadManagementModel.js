@@ -207,6 +207,7 @@ async function saveBotLeads(Lead) {
   let chatWhatsappBranch = "";
   let consultationType = "";
   let query = "";
+  let email = "";
 
   if (service === "live_chat") {
     name = variables.Name || "";
@@ -217,6 +218,7 @@ async function saveBotLeads(Lead) {
     chatWhatsappBranch = variables.Chat_on_Whatsapp || "";
     consultationType = variables.Online_consultation || "";
     query = variables.Query || "";
+    email = variables.Email || "";
   } else if (service === "whatsapp") {
     name = leadData.contact.name || "";
     contact = leadData.contact.phone || "";
@@ -226,6 +228,7 @@ async function saveBotLeads(Lead) {
     chatWhatsappBranch = variables["Chat on Whatsapp"] || "";
     consultationType = ""; // not provided in WhatsApp leads
     query = variables.Query || "";
+    email = "";
   } else {
     throw new Error("Unsupported lead service type.");
   }
@@ -243,8 +246,8 @@ async function saveBotLeads(Lead) {
 
       const sql = `
         INSERT INTO chatbot_leads 
-        (datetime, name, location, branch, contact, disease, chat_whatsapp_branch, consultation_type, query)
-        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)
+        (datetime, name, location, branch, contact, email, disease, chat_whatsapp_branch, consultation_type, query)
+        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
@@ -252,6 +255,7 @@ async function saveBotLeads(Lead) {
         location,
         branch,
         contact,
+        email,
         disease,
         chatWhatsappBranch,
         consultationType,
