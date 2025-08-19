@@ -277,4 +277,90 @@ async function saveBotLeads(Lead) {
   });
 }
 
-module.exports = { getLeads, updateStatus, saveBotLeads };
+async function saveAdvertiseLeads(Lead) {
+  console.log("Advertise Lead:", Lead);
+  return ["Lead saved successfully!"];
+  const leadData = Array.isArray(Lead) ? Lead[0] : Lead;
+  console.log("BOT LEAD:", leadData);
+
+  const service = leadData.service;
+  const variables = leadData.contact.variables || {};
+  let name = "";
+  let location = "";
+  let branch = "";
+  let contact = "";
+  let disease = "";
+  let chatWhatsappBranch = "";
+  let consultationType = "";
+  let query = "";
+  let email = "";
+
+  if (service === "live_chat") {
+    name = variables.Name || "";
+    location = variables.Location || "";
+    branch = variables.Branch || "";
+    contact = variables.Contact || leadData.contact.phone || "";
+    disease = variables.Disease || "";
+    chatWhatsappBranch = variables.Chat_on_Whatsapp || "";
+    consultationType = variables.Online_consultation || "";
+    query = variables.Query || "";
+    email = variables.Email || "";
+  } else if (service === "whatsapp") {
+    name = leadData.contact.name || "";
+    contact = leadData.contact.phone || "";
+    location = ""; // Optional or default
+    branch = ""; // Optional or default
+    disease = ""; // Optional or default
+    chatWhatsappBranch = variables["Chat on Whatsapp"] || "";
+    consultationType = ""; // not provided in WhatsApp leads
+    query = variables.Query || "";
+    email = "";
+  } else {
+    throw new Error("Unsupported lead service type.");
+  }
+
+  const { connection } = getConnectionByLocation("lead");
+  if (!connection) {
+    const err = new Error("Invalid location at bot lead save function");
+    err.status = 404;
+    throw err;
+  }
+
+  return new Promise((resolve, reject) => {
+    connection.getConnection(function (err, tempCon) {
+      if (err) return reject(err);
+
+      const sql = `
+        INSERT INTO chatbot_leads 
+        (datetime, name, location, branch, contact, email, disease, chat_whatsapp_branch, consultation_type, query)
+        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      const values = [
+        name,
+        location,
+        branch,
+        contact,
+        email,
+        disease,
+        chatWhatsappBranch,
+        consultationType,
+        query,
+      ];
+
+      console.log("Executing SQL:", sql, values);
+
+      tempCon.query(sql, values, function (error, result) {
+        tempCon.release();
+        if (error) {
+          console.log("Error while adding lead!");
+          return reject(error);
+        }
+        console.log("Lead Added!", result);
+        resolve("Lead added!");
+      });
+    });
+  });
+}
+
+module.exports = { getLeads, updateStatus, saveBotLeads, saveAdvertiseLeads };
