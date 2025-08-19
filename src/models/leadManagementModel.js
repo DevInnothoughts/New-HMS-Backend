@@ -279,45 +279,10 @@ async function saveBotLeads(Lead) {
 
 async function saveAdvertiseLeads(Lead) {
   console.log("Advertise Lead:", Lead);
-  return ["Lead saved successfully!"];
-  const leadData = Array.isArray(Lead) ? Lead[0] : Lead;
-  console.log("BOT LEAD:", leadData);
-
-  const service = leadData.service;
-  const variables = leadData.contact.variables || {};
-  let name = "";
-  let location = "";
-  let branch = "";
-  let contact = "";
-  let disease = "";
-  let chatWhatsappBranch = "";
-  let consultationType = "";
-  let query = "";
-  let email = "";
-
-  if (service === "live_chat") {
-    name = variables.Name || "";
-    location = variables.Location || "";
-    branch = variables.Branch || "";
-    contact = variables.Contact || leadData.contact.phone || "";
-    disease = variables.Disease || "";
-    chatWhatsappBranch = variables.Chat_on_Whatsapp || "";
-    consultationType = variables.Online_consultation || "";
-    query = variables.Query || "";
-    email = variables.Email || "";
-  } else if (service === "whatsapp") {
-    name = leadData.contact.name || "";
-    contact = leadData.contact.phone || "";
-    location = ""; // Optional or default
-    branch = ""; // Optional or default
-    disease = ""; // Optional or default
-    chatWhatsappBranch = variables["Chat on Whatsapp"] || "";
-    consultationType = ""; // not provided in WhatsApp leads
-    query = variables.Query || "";
-    email = "";
-  } else {
-    throw new Error("Unsupported lead service type.");
-  }
+  let name = Lead.name || "";
+  let city = Lead.city || "";
+  let contact = Lead.contact || "";
+  let disease = Lead.disease || "";
 
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
@@ -331,22 +296,12 @@ async function saveAdvertiseLeads(Lead) {
       if (err) return reject(err);
 
       const sql = `
-        INSERT INTO chatbot_leads 
-        (datetime, name, location, branch, contact, email, disease, chat_whatsapp_branch, consultation_type, query)
-        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO advertiseLeads 
+        (name, contact, city, disease)
+        VALUES ( ?, ?, ?, ?)
       `;
 
-      const values = [
-        name,
-        location,
-        branch,
-        contact,
-        email,
-        disease,
-        chatWhatsappBranch,
-        consultationType,
-        query,
-      ];
+      const values = [name, contact, city, disease];
 
       console.log("Executing SQL:", sql, values);
 
