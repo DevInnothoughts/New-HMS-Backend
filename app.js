@@ -12,6 +12,7 @@ const uploadCallLogsController = require("./src/controllers/uploadCallLogsContro
 const callingListController = require("./src/controllers/CallingListController");
 const patientRegFormController = require("./src/controllers/patientRegFormController");
 const leadManagementController = require("./src/controllers/leadManagementController");
+const insuranceController = require("./src/controllers/insuranceIntegrationController");
 app.use(express.json());
 app.use(cors());
 
@@ -27,6 +28,8 @@ app.use("/ivr/uploadCallLogs", uploadCallLogsController);
 app.use("/ivr/callingList", callingListController);
 app.use("/ivr/patientRegForm", patientRegFormController);
 app.use("/ivr/leadManagement", leadManagementController);
+
+app.use("/ivr/insurance", insuranceController);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
