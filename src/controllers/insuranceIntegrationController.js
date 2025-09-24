@@ -9,7 +9,10 @@ const {
 // Middleware to check AccessToken
 router.use((req, res, next) => {
   const accessToken = req.headers["accesstoken"];
-  if (!accessToken) {
+  if (
+    !accessToken ||
+    accessToken !== "76B3D4C3FEBA76666AB48416643B7B511AFDB70929A499"
+  ) {
     return res.status(400).json({
       isSuccess: false,
       errorCode: "E101",

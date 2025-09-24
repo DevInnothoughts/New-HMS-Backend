@@ -239,23 +239,24 @@ async function savePatientStatusUpdate(payload) {
               );
             });
 
-            //console.log("Invoice ID Result:", invoiceIdResult);
+            console.log("Invoice ID Result:", invoiceIdResult);
 
             if (invoiceIdResult && invoiceIdResult.length > 0) {
               const invoiceId = invoiceIdResult[0].invoice_id;
 
               // Update insurance_invoice.receivedamt
-              await new Promise((res, rej) => {
+              const invoiceResult = await new Promise((res, rej) => {
                 tempCon.query(
                   // `UPDATE insurance_invoice
-                  //  SET receivedamt = ?
+                  //  SET receivedamt = ?, paymentdate= NOW()
                   //  WHERE invoice_id = ?`,
                   "SELECT * FROM insurance_invoice WHERE invoiceid = ?",
                   [invoiceId],
                   //[settledAmount, invoiceId],
-                  (error) => (error ? rej(error) : res())
+                  (error, rows) => (error ? rej(error) : res(rows))
                 );
               });
+              console.log("Update Result:", invoiceResult);
             }
           }
 
