@@ -39,41 +39,41 @@ const conKatraj = createPool("hmsKatrajDB");
 const conLead = createPool("hhc_appointments");
 
 const providerMap = {
-  101: { locationName: "Hyderabad", connection: conHyderabad },
-  102: { locationName: "DP Road", connection: conDP },
-  103: { locationName: "Surat", connection: conSurat },
-  104: { locationName: "Ludhiana", connection: conLudhiana },
-  105: { locationName: "Indiranagar", connection: conIndiranagar },
-  106: { locationName: "Dighi", connection: conDighi },
-  107: { locationName: "Thane", connection: conThane },
-  108: { locationName: "Belagavi", connection: conBelgavi },
-  109: { locationName: "HSR", connection: conHSR },
-  110: { locationName: "Bangalore", connection: conBangalore },
-  111: { locationName: "Navi-Mumbai", connection: conNM },
-  112: { locationName: "Pimpri-Chinchwad", connection: conPC },
-  113: { locationName: "Nashik", connection: conNashik },
-  114: { locationName: "Salunkhe-Vihar", connection: conSV },
-  115: { locationName: "Chakan", connection: conChakan },
-  116: { locationName: "Baner", connection: conBaner },
-  117: { locationName: "Kolhapur", connection: conKolhapur },
-  118: { locationName: "Secunderabad", connection: conSecunderabad },
-  119: { locationName: "Andheri", connection: conAndheri },
-  120: { locationName: "Sahakarnagar", connection: conSahakarnagar },
-  121: { locationName: "Gurgaon-14", connection: conGurgaon14 },
-  122: { locationName: "Gurgaon-49", connection: conGurgaon49 },
-  123: { locationName: "Kemps-Corner", connection: conkc },
-  124: { locationName: "Latur", connection: conLatur },
-  125: { locationName: "Indore", connection: conIndore },
-  126: { locationName: "Mysore", connection: conMysore },
-  127: { locationName: "Undri", connection: conUndri },
-  128: { locationName: "Vashi", connection: conVashi },
-  129: { locationName: "Hinjewadi", connection: conHinjewadi },
-  130: { locationName: "Lucknow", connection: conLucknow },
-  131: { locationName: "Kalaburagi", connection: conKalaburagi },
-  132: { locationName: "Rajaji Nagar", connection: conRajajiNagar },
-  133: { locationName: "Sarjapura", connection: conSarjapura },
-  134: { locationName: "Katraj", connection: conKatraj },
-  135: { locationName: "Lead", connection: conLead },
+  HHC101: { locationName: "Hyderabad", connection: conHyderabad },
+  HHC102: { locationName: "DP Road", connection: conDP },
+  HHC103: { locationName: "Surat", connection: conSurat },
+  HHC104: { locationName: "Ludhiana", connection: conLudhiana },
+  HHC105: { locationName: "Indiranagar", connection: conIndiranagar },
+  HHC106: { locationName: "Dighi", connection: conDighi },
+  HHC107: { locationName: "Thane", connection: conThane },
+  HHC108: { locationName: "Belagavi", connection: conBelgavi },
+  HHC109: { locationName: "HSR", connection: conHSR },
+  HHC110: { locationName: "Bangalore", connection: conBangalore },
+  HHC111: { locationName: "Navi-Mumbai", connection: conNM },
+  HHC112: { locationName: "Pimpri-Chinchwad", connection: conPC },
+  HHC113: { locationName: "Nashik", connection: conNashik },
+  HHC114: { locationName: "Salunkhe-Vihar", connection: conSV },
+  HHC115: { locationName: "Chakan", connection: conChakan },
+  HHC116: { locationName: "Baner", connection: conBaner },
+  HHC117: { locationName: "Kolhapur", connection: conKolhapur },
+  HHC118: { locationName: "Secunderabad", connection: conSecunderabad },
+  HHC119: { locationName: "Andheri", connection: conAndheri },
+  HHC120: { locationName: "Sahakarnagar", connection: conSahakarnagar },
+  HHC121: { locationName: "Gurgaon-14", connection: conGurgaon14 },
+  HHC122: { locationName: "Gurgaon-49", connection: conGurgaon49 },
+  HHC123: { locationName: "Kemps-Corner", connection: conkc },
+  HHC124: { locationName: "Latur", connection: conLatur },
+  HHC125: { locationName: "Indore", connection: conIndore },
+  HHC126: { locationName: "Mysore", connection: conMysore },
+  HHC127: { locationName: "Undri", connection: conUndri },
+  HHC128: { locationName: "Vashi", connection: conVashi },
+  HHC129: { locationName: "Hinjewadi", connection: conHinjewadi },
+  HHC130: { locationName: "Lucknow", connection: conLucknow },
+  HHC131: { locationName: "Kalaburagi", connection: conKalaburagi },
+  HHC132: { locationName: "Rajaji Nagar", connection: conRajajiNagar },
+  HHC133: { locationName: "Sarjapura", connection: conSarjapura },
+  HHC134: { locationName: "Katraj", connection: conKatraj },
+  HHC135: { locationName: "Lead", connection: conLead },
 };
 
 const getConnectionByProviderId = (providerId) => {
@@ -100,26 +100,27 @@ async function searchPatient(providerID, uhid, mobile) {
 
       let query = `
         SELECT 
-          ${providerID} AS HospitalID,
           p.phone,
           p.name,
           p.age,
           p.birth_date,
           p.sex,
+          p.uid_no AS uhid,
           ic.companyname AS InsurerName,
-          tpa.companyname AS PayerTPA,
+          tpa.companyname AS PayerName,
           inv.creation_date AS DateOfAdmission,
-          inv.due_date AS DateOfDischarge
+          inv.due_date AS DateOfDischarge,
+          inv.admission_no AS ipNumber
         FROM patient p
         LEFT JOIN invoice inv ON p.patient_id = inv.patient_id
-        LEFT JOIN insurance_company ic ON inv.insurancecompany = ic.company_id
-        LEFT JOIN insurance_company tpa ON inv.tpa = tpa.company_id
+        LEFT JOIN insurance_company ic ON inv.insurancecompany = ic.comapny_id
+        LEFT JOIN insurance_company tpa ON inv.tpa = tpa.comapny_id
         WHERE p.ConfirmPatient = 1`;
 
       const params = [];
 
       if (uhid) {
-        query += " AND p.uhid = ?";
+        query += " AND p.Uid_no = ?";
         params.push(uhid);
       }
 
@@ -142,8 +143,8 @@ async function searchPatient(providerID, uhid, mobile) {
 }
 
 async function savePatientStatusUpdate(payload) {
-  const { HospitalID } = payload;
-  const { connection } = getConnectionByProviderId(HospitalID);
+  const { hospitalID } = payload;
+  const { connection } = getConnectionByProviderId(hospitalID);
 
   if (!connection) {
     throw new Error("Invalid HospitalID / Provider");
@@ -154,35 +155,34 @@ async function savePatientStatusUpdate(payload) {
       if (err) return reject(err);
 
       const {
-        UHID,
-        IPNumber,
-        MobileNumber,
-        StatusID,
-        ClaimNumber,
-        StatusName,
-        ClaimedAmount,
-        ApprovedAmount,
-        SettledAmount,
-        UTRNo,
-        Letters,
-        Remarks,
+        uhid,
+        ipNumber,
+        mobileNumber,
+        statusId,
+        claimNumber,
+        statusName,
+        claimedAmount,
+        approvedAmount,
+        settledAmount,
+        utrNo,
+        remarks,
       } = payload;
 
       // Build dynamic WHERE condition based on available identifiers
       const identifiers = [];
       const identifierValues = [];
 
-      if (UHID) {
+      if (uhid) {
         identifiers.push("uhid = ?");
-        identifierValues.push(UHID);
+        identifierValues.push(uhid);
       }
-      if (IPNumber) {
+      if (ipNumber) {
         identifiers.push("ip_number = ?");
-        identifierValues.push(IPNumber);
+        identifierValues.push(ipNumber);
       }
-      if (MobileNumber) {
+      if (mobileNumber) {
         identifiers.push("mobile_number = ?");
-        identifierValues.push(MobileNumber);
+        identifierValues.push(mobileNumber);
       }
 
       if (identifiers.length === 0) {
@@ -192,37 +192,89 @@ async function savePatientStatusUpdate(payload) {
       const whereClause = identifiers.join(" OR ");
 
       // Build the new status update object
-      const statusUpdateObject = {
-        timestamp: new Date().toISOString(),
-        statusId: StatusID,
-        statusName: StatusName,
-        claimNumber: ClaimNumber,
-        claimedAmount: ClaimedAmount,
-        approvedAmount: ApprovedAmount,
-        settledAmount: SettledAmount,
-        utrNo: UTRNo,
-        letters: Letters,
-        remarks: Remarks,
-      };
+      // const statusUpdateObject = {
+      //   timestamp: new Date().toISOString(),
+      //   statusId: statusId,
+      //   statusName: statusName,
+      //   claimNumber: claimNumber,
+      //   claimedAmount: claimedAmount,
+      //   approvedAmount: approvedAmount,
+      //   settledAmount: settledAmount,
+      //   utrNo: utrNo,
+      //   remarks: remarks,
+      // };
 
-      const sql = `
-        UPDATE patient_status_updates
-        SET
-          status = JSON_ARRAY_APPEND(
-            IFNULL(status, JSON_ARRAY()),
-            '$',
-            CAST(? AS JSON)
-          ),
-        WHERE ${whereClause}
-      `;
+      // Start transaction
+      tempCon.beginTransaction(async (err) => {
+        if (err) return reject(err);
 
-      const params = [JSON.stringify(statusUpdateObject), ...identifierValues];
+        try {
+          // Step 1: Update patient_status_updates JSON column
+          // const updateStatusSql = `
+          //   UPDATE patient_status_updates
+          //   SET status = JSON_ARRAY_APPEND(
+          //     IFNULL(status, JSON_ARRAY()),
+          //     '$',
+          //     CAST(? AS JSON)
+          //   )
+          //   WHERE ${whereClause}
+          // `;
 
-      tempCon.query(sql, params, (error, result) => {
-        tempCon.release();
-        if (error) return reject(error);
+          // await new Promise((res, rej) => {
+          //   tempCon.query(
+          //     updateStatusSql,
+          //     [JSON.stringify(statusUpdateObject), ...identifierValues],
+          //     (error) => (error ? rej(error) : res())
+          //   );
+          // });
 
-        resolve(result);
+          // Step 2: If ipNumber and settledAmount are provided, update insurance_invoice
+          if (ipNumber && settledAmount != null) {
+            // Get invoice_id from invoice table
+            const invoiceIdResult = await new Promise((res, rej) => {
+              tempCon.query(
+                `SELECT invoice_id FROM invoice WHERE admission_no = ? LIMIT 1`,
+                [ipNumber],
+                (error, rows) => (error ? rej(error) : res(rows))
+              );
+            });
+
+            //console.log("Invoice ID Result:", invoiceIdResult);
+
+            if (invoiceIdResult && invoiceIdResult.length > 0) {
+              const invoiceId = invoiceIdResult[0].invoice_id;
+
+              // Update insurance_invoice.receivedamt
+              await new Promise((res, rej) => {
+                tempCon.query(
+                  // `UPDATE insurance_invoice
+                  //  SET receivedamt = ?
+                  //  WHERE invoice_id = ?`,
+                  "SELECT * FROM insurance_invoice WHERE invoiceid = ?",
+                  [invoiceId],
+                  //[settledAmount, invoiceId],
+                  (error) => (error ? rej(error) : res())
+                );
+              });
+            }
+          }
+
+          // Commit transaction
+          tempCon.commit((err) => {
+            tempCon.release();
+            if (err) return reject(err);
+            resolve({
+              success: true,
+              message: "Patient status updated successfully",
+            });
+          });
+        } catch (e) {
+          // Rollback on error
+          tempCon.rollback(() => {
+            tempCon.release();
+            reject(e);
+          });
+        }
       });
     });
   });

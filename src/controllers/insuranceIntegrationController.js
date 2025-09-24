@@ -1,5 +1,5 @@
 const express = require("express");
-const { v4: uuidv4 } = require("uuid");
+
 const router = express.Router();
 const {
   searchPatient,
@@ -12,7 +12,8 @@ router.use((req, res, next) => {
   if (!accessToken) {
     return res.status(400).json({
       isSuccess: false,
-      errorMessage: "AccessToken does not exist in the API header",
+      errorCode: "E101",
+      errorMessage: "AccessToken does not exist or invalid in the API header",
       // identifier: uuidv4(),
       response: null,
     });
@@ -20,66 +21,112 @@ router.use((req, res, next) => {
   next();
 });
 
-router.post("/v1/PatientSearch", async (req, res) => {
-  const { ProviderID, UHID, MobileNumber } = req.body;
-  //const identifier = uuidv4();
+function safeDateToMillis(dateVal) {
+  if (!dateVal) return null;
+  try {
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return null;
+    return d.getTime().toString();
+  } catch {
+    return null;
+  }
+}
 
-  if (!ProviderID || (!UHID && !MobileNumber)) {
-    return res.status(400).json({
-      isSuccess: false,
-      errorMessage: "No key to search",
-      // identifier,
-      response: null,
-    });
+function calculateAgeFromDOB(dobStr) {
+  if (!dobStr) return null;
+
+  const parts = dobStr.split("-");
+  if (parts.length !== 3) return null;
+
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1; // month is 0-indexed
+  const year = parseInt(parts[2], 10);
+
+  if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+
+  const today = new Date();
+  let age = today.getFullYear() - year;
+
+  // Adjust if birthday hasn’t occurred yet this year
+  const hasBirthdayPassed =
+    today.getMonth() > month ||
+    (today.getMonth() === month && today.getDate() >= day);
+
+  if (!hasBirthdayPassed) {
+    age--;
   }
 
+  return age;
+}
+
+router.post("/v1/PatientSearch", async (req, res) => {
   try {
-    const patientData = await searchPatient(ProviderID, UHID, MobileNumber);
+    const { providerID } = req.body;
+    const uhid = (req.body.uhid || "").trim();
+    const mobileNumber = (req.body.mobileNumber || "").trim();
+
+    // console.log("Received PatientSearch request:", {
+    //   providerID,
+    //   uhid,
+    //   mobileNumber,
+    // });
+
+    // ✅ Validate before any DB calls
+    if (!providerID || (uhid === "" && mobileNumber === "")) {
+      //console.log("Invalid request parameters");
+      return res.status(400).json({
+        isSuccess: false,
+        errorCode: "E102",
+        errorMessage: "No key to search",
+        response: null,
+      });
+    }
+
+    // ✅ Only runs if valid
+    const patientData = await searchPatient(providerID, uhid, mobileNumber);
+    //console.log("Patient Data:", patientData);
 
     if (!patientData || patientData.length === 0) {
       return res.status(404).json({
         isSuccess: false,
+        errorCode: "E103",
         errorMessage: "No matching patient record found",
-        //identifier,
         response: null,
       });
     }
 
     const patient = patientData[0];
 
-    const responsePayload = {
+    return res.status(200).json({
       isSuccess: true,
       errorMessage: null,
-      //identifier,
       response: {
-        hospitalId: `${HospitalID}`,
+        hospitalId: `${providerID}`,
         patientDetails: {
           patientName: patient.name || null,
           mobileNumber: patient.phone || null,
           insurerName: patient.InsurerName || null,
-          payer: patient.PayerTPA || null,
-          patientAge: patient.age || null,
+          payerName: patient.PayerName || null,
+          payerId: null,
+          insurerId: null,
+          uhid: patient.uhid,
+          ipNumber: patient.ipNumber,
+          patientAge: calculateAgeFromDOB(patient.birth_date),
           patientGender: patient.sex || null,
-          dateOfBirth: patient.birth_date, // Populate if available
+          dateOfBirth: patient.birth_date,
         },
         treatmentDetails: {
-          dateOfAdmission: patient.DateOfAdmission
-            ? new Date(patient.DateOfAdmission).getTime().toString()
-            : null,
-          dateOfDischarge: patient.DateOfDischarge
-            ? new Date(patient.DateOfDischarge).getTime().toString()
-            : null,
+          dateOfAdmission: safeDateToMillis(patient.DateOfAdmission),
+          dateOfDischarge: safeDateToMillis(patient.DateOfDischarge),
         },
       },
-    };
-
-    res.status(200).json(responsePayload);
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
+    return res.status(500).json({
       isSuccess: false,
+      errorCode: "E500",
       errorMessage: "Internal Error",
-      identifier,
       response: null,
     });
   }
@@ -88,32 +135,31 @@ router.post("/v1/PatientSearch", async (req, res) => {
 // Callback API - Patient Status Update
 router.post("/v1/patientStatusUpdate", async (req, res) => {
   const {
-    HospitalID,
-    UHID,
-    IPNumber,
-    MobileNumber,
-    StatusID,
-    ClaimNumber,
-    StatusName,
-    ClaimedAmount,
-    ApprovedAmount,
-    SettledAmount,
-    UTRNo,
-    Letters,
-    Remarks,
+    hospitalID,
+    uhid,
+    ipNumber,
+    mobileNumber,
+    statusId,
+    claimNumber,
+    statusName,
+    claimedAmount,
+    approvedAmount,
+    settledAmount,
+    utrNo,
+    remarks,
   } = req.body;
 
-  // HospitalID is required
-  if (!HospitalID) {
+  // hospitalID is required
+  if (!hospitalID) {
     return res.status(400).json({
       isSuccess: false,
-      errorMessage: "HospitalID is required",
+      errorMessage: "hospitalID is required",
       response: null,
     });
   }
 
   // At least one patient identifier is required
-  if (!UHID && !IPNumber && !MobileNumber) {
+  if (!uhid && !ipNumber && !mobileNumber) {
     return res.status(400).json({
       isSuccess: false,
       errorMessage: "At least one patient identifier is required",
@@ -124,38 +170,37 @@ router.post("/v1/patientStatusUpdate", async (req, res) => {
   try {
     // Save/Update into DB
     await savePatientStatusUpdate({
-      HospitalID,
-      UHID,
-      IPNumber,
-      MobileNumber,
-      StatusID,
-      ClaimNumber,
-      StatusName,
-      ClaimedAmount,
-      ApprovedAmount,
-      SettledAmount,
-      UTRNo,
-      Letters,
-      Remarks,
+      hospitalID,
+      uhid,
+      ipNumber,
+      mobileNumber,
+      statusId,
+      claimNumber,
+      statusName,
+      claimedAmount,
+      approvedAmount,
+      settledAmount,
+      utrNo,
+      remarks,
     });
 
     // Response according to screenshot
     res.status(200).json({
-      HospitalID,
-      UHID: UHID || null,
-      IPNumber: IPNumber || null,
-      MobileNumber: MobileNumber || null,
-      StatusName: StatusName || "Success",
-      StatusID: StatusID || "200",
-      Message: "Saved Successfully",
+      hospitalID,
+      uhid: uhid || null,
+      ipNumber: ipNumber || null,
+      mobileNumber: mobileNumber || null,
+      statusName: statusName || "Success",
+      statusId: statusId || "200",
+      message: "Saved Successfully",
     });
   } catch (err) {
     console.error("Error in patientStatusUpdate:", err);
     res.status(500).json({
-      HospitalID,
-      StatusName: "Failure",
-      StatusID: "500",
-      Message: "Internal Error",
+      hospitalID,
+      statusName: "Failure",
+      statusID: "500",
+      message: "Internal Error",
     });
   }
 });
@@ -169,30 +214,28 @@ module.exports = router;
 
 // Body (JSON):
 // {
-//   "ProviderID": "HOSP12345",
-//   "UHID": "UHID987654321",
-//   "MobileNumber": "9876543210"
+//   "providerID": "HOSP12345",
+//   "uhid": "UHID987654321",
+//   "mobileNumber": "9876543210"
 // }
 
 //CallBack API
 //Body: {
-//   "HospitalID": 102,
-//   "UHID": "UH1234",
-//   "StatusID": "ST01",
-//   "StatusName": "Approved",
-//   "ClaimedAmount": 5000,
-//   "ApprovedAmount": 4500,
-//   "Remarks": "Partially Approved"
+//   "hospitalID": 102,
+//   "uhid": "UH1234",
+//   "statusID": "ST01",
+//   "statusName": "Approved",
+//   "claimedAmount": 5000,
+//   "approvedAmount": 4500,
+//   "remarks": "Partially Approved"
 // }
 
 //Response: {
-//   "HospitalID": 102,
-//   "UHID": "UH1234",
-//   "IPNumber": null,
-//   "MobileNumber": null,
-//   "ABHAAddress": null,
-//   "ABHANumber": null,
-//   "StatusName": "Approved",
-//   "StatusID": "ST01",
-//   "Message": "Saved Successfully"
+//   "hospitalID": 102,
+//   "uhid": "UH1234",
+//   "ipNumber": null,
+//   "mobileNumber": null,
+//   "statusName": "Approved",
+//   "statusID": "ST01",
+//   "message": "Saved Successfully"
 // }

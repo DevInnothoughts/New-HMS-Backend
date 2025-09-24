@@ -54,20 +54,10 @@ class AESGCMUtil {
 }
 
 // 🔹 Demo usage
-const plainText = JSON.stringify({
-  deviceSerialNo: "P10A6241226003300",
-  deviceIdentifier: "9730438137",
-});
-// const plainText = JSON.stringify({
-//   userName: "9730438137",
-//   password: "1321",
-//   invoiceNo: "123425345435",
-//   transactionAmount: "100",
-//   transactionType: "22",
-//   upiAddress: "9730304073@ybl",
-//   payerName: "Shubham",
-//   autoInitiateFlag: "true",
-// });
+// const plainText =
+//   '{"deviceSerialNo":"P10A6241226003300","deviceIdentifier":"9730438137"}';
+const plainText =
+  '{"userName":"9730438137","password":"1321","invoiceNo":"123425345435","transactionAmount":"10","transactionType":"1","upiAddress":"9730304073@ybl","payerName":"Shubham","autoInitiateFlag":"N"}';
 // Example 256-bit AES key (64 hex chars)
 const secretKeyHex =
   "2921891879479EA617E2E598ACDBBAAF4F46B342152BE9B7D316C60B999F1185";
@@ -103,7 +93,8 @@ class HMACUtil {
 }
 
 // 🔹 Demo usage
-const message = cipherHex;
+const message =
+  '{"notificationIdentifier":"9730438137","webTransactionId":"13802","transactionMessage":"transaction details published successfully."}';
 //"1A4F9A840AD88DDC6C898042F814A53E5987ED403D837FE4D60739CE8CC09B03EAB1788C32CCC2FF5E0FDC08E130D176EB21A032B4563FE43E5380E722DF0455AC5611965530595140695E248460A9FF45571C96E259FE41C52587D761EA09655D0BCB8E3D50A3336C173D79AF85A1515506F1C1017D8DA67D3DB5BAEF350309EE68417C5443EF098A3BEA199227B62B5A86EB3FD97F861E241B814CC3297DAA3BEC338319EA8E9240AB7650";
 
 const keyHex =
