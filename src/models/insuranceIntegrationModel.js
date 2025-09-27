@@ -249,14 +249,14 @@ async function savePatientStatusUpdate(payload) {
                 tempCon.query(
                   // `UPDATE insurance_invoice
                   //  SET receivedamt = ?, paymentdate= NOW()
-                  //  WHERE invoice_id = ?`,
+                  //  WHERE invoiceid = ?`,
                   "SELECT * FROM insurance_invoice WHERE invoiceid = ?",
                   [invoiceId],
                   //[settledAmount, invoiceId],
                   (error, rows) => (error ? rej(error) : res(rows))
                 );
               });
-              console.log("Update Result:", invoiceResult);
+              //console.log("Update Result:", invoiceResult);
             }
           }
 
