@@ -231,35 +231,77 @@ async function savePatientStatusUpdate(payload) {
           // });
 
           // Step 2: If ipNumber and settledAmount are provided, update insurance_invoice
-          if (ipNumber && settledAmount != null) {
-            // Get invoice_id from invoice table
-            const invoiceIdResult = await new Promise((res, rej) => {
+          let patientId, invoiceId;
+
+          if (ipNumber) {
+            // Fetch invoice using admission_no
+            const invoiceResult = await new Promise((res, rej) => {
               tempCon.query(
                 `SELECT invoice_id, patient_id FROM invoice WHERE admission_no = ? LIMIT 1`,
                 [ipNumber],
                 (error, rows) => (error ? rej(error) : res(rows))
               );
             });
-
-            console.log("Invoice ID Result:", invoiceIdResult);
-
-            if (invoiceIdResult && invoiceIdResult.length > 0) {
-              const invoiceId = invoiceIdResult[0].invoice_id;
-              const patientId = invoiceIdResult[0].patient_id;
-              // Update insurance_invoice.receivedamt
-              const invoiceResult = await new Promise((res, rej) => {
+            console.log(invoiceResult);
+            if (invoiceResult && invoiceResult.length > 0) {
+              invoiceId = invoiceResult[0].invoice_id;
+              patientId = invoiceResult[0].patient_id;
+            }
+          } else {
+            // Fetch patient_id using uhid or mobileNumber
+            if (uhid) {
+              const patientResult = await new Promise((res, rej) => {
                 tempCon.query(
-                  `UPDATE insurance_invoice
-                   SET receivedamt = ?, paymentdate= NOW()
-                   WHERE invoiceid = ? AND patientid = ?`,
-                  // "SELECT * FROM insurance_invoice WHERE invoiceid = ?  AND patientid = ?",
-                  // [invoiceId, patientId],
-                  [settledAmount, invoiceId, patientId],
+                  `SELECT patient_id FROM patient WHERE Uid_no = ? LIMIT 1`,
+                  [uhid],
                   (error, rows) => (error ? rej(error) : res(rows))
                 );
               });
-              console.log("Update Result:", invoiceResult);
+              console.log(patientResult);
+              if (patientResult && patientResult.length > 0) {
+                patientId = patientResult[0].patient_id;
+              }
+            } else if (mobileNumber) {
+              const patientResult = await new Promise((res, rej) => {
+                tempCon.query(
+                  `SELECT patient_id FROM patient WHERE phone = ? LIMIT 1`,
+                  [mobileNumber],
+                  (error, rows) => (error ? rej(error) : res(rows))
+                );
+              });
+              console.log(patientResult);
+              if (patientResult && patientResult.length > 0) {
+                patientId = patientResult[0].patient_id;
+              }
             }
+
+            // Fetch invoice using patient_id
+            if (patientId) {
+              const invoiceResult = await new Promise((res, rej) => {
+                tempCon.query(
+                  `SELECT invoice_id FROM invoice WHERE patient_id = ? LIMIT 1`,
+                  [patientId],
+                  (error, rows) => (error ? rej(error) : res(rows))
+                );
+              });
+              console.log(invoiceResult);
+              if (invoiceResult && invoiceResult.length > 0) {
+                invoiceId = invoiceResult[0].invoice_id;
+              }
+            }
+          }
+
+          // Update insurance_invoice if possible
+          if (invoiceId && patientId && settledAmount != null) {
+            await new Promise((res, rej) => {
+              tempCon.query(
+                `UPDATE insurance_invoice
+                 SET receivedamt = ?, paymentdate = NOW()
+                 WHERE invoiceid = ? AND patientid = ?`,
+                [settledAmount, invoiceId, patientId],
+                (error, rows) => (error ? rej(error) : res(rows))
+              );
+            });
           }
 
           // Commit transaction

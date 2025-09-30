@@ -189,21 +189,32 @@ router.post("/v1/patientStatusUpdate", async (req, res) => {
 
     // Response according to screenshot
     res.status(200).json({
-      hospitalID,
-      uhid: uhid || null,
-      ipNumber: ipNumber || null,
-      mobileNumber: mobileNumber || null,
-      statusName: statusName || "Success",
-      statusId: statusId || "200",
-      message: "Saved Successfully",
+      isSuccess: true,
+      errorMessage: null,
+      response: {
+        hospitalID,
+        uhid: uhid || null,
+        ipNumber: ipNumber || null,
+        mobileNumber: mobileNumber || null,
+        statusName: "Success",
+        statusId: "200",
+        message: "Saved Successfully",
+      },
     });
   } catch (err) {
     console.error("Error in patientStatusUpdate:", err);
     res.status(500).json({
-      hospitalID,
-      statusName: "Failure",
-      statusID: "500",
-      message: "Internal Error",
+      isSuccess: false,
+      errorMessage: "Internal Error",
+      response: {
+        hospitalID,
+        uhid: uhid || null,
+        ipNumber: ipNumber || null,
+        mobileNumber: mobileNumber || null,
+        statusName: "Failure",
+        statusId: "500",
+        message: "Internal Error",
+      },
     });
   }
 });
