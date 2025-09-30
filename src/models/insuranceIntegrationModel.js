@@ -37,8 +37,10 @@ const conRajajiNagar = createPool("hmsRajajinagarDB");
 const conSarjapura = createPool("hmsSarjapuraDB");
 const conKatraj = createPool("hmsKatrajDB");
 const conLead = createPool("hhc_appointments");
+const conTest = createPool("medixpress-demo");
 
 const providerMap = {
+  HHC000: { locationName: "Test", connection: conTest },
   HHC101: { locationName: "Hyderabad", connection: conHyderabad },
   HHC102: { locationName: "DP Road", connection: conDP },
   HHC103: { locationName: "Surat", connection: conSurat },
@@ -87,7 +89,7 @@ const getConnectionByProviderId = (providerId) => {
 };
 
 async function searchPatient(providerID, uhid, mobile) {
-  const { connection } = getConnectionByProviderId(providerID);
+  const { connection } = getConnectionByProviderId("HHC000");
   if (!connection) {
     throw new Error("Invalid ProviderID");
   }
@@ -144,7 +146,7 @@ async function searchPatient(providerID, uhid, mobile) {
 
 async function savePatientStatusUpdate(payload) {
   const { hospitalID } = payload;
-  const { connection } = getConnectionByProviderId(hospitalID);
+  const { connection } = getConnectionByProviderId("HHC000"); //getConnectionByProviderId(hospitalID);
 
   if (!connection) {
     throw new Error("Invalid HospitalID / Provider");
@@ -233,7 +235,7 @@ async function savePatientStatusUpdate(payload) {
             // Get invoice_id from invoice table
             const invoiceIdResult = await new Promise((res, rej) => {
               tempCon.query(
-                `SELECT invoice_id FROM invoice WHERE admission_no = ? LIMIT 1`,
+                `SELECT invoice_id, patient_id FROM invoice WHERE admission_no = ? LIMIT 1`,
                 [ipNumber],
                 (error, rows) => (error ? rej(error) : res(rows))
               );
@@ -243,20 +245,20 @@ async function savePatientStatusUpdate(payload) {
 
             if (invoiceIdResult && invoiceIdResult.length > 0) {
               const invoiceId = invoiceIdResult[0].invoice_id;
-
+              const patientId = invoiceIdResult[0].patient_id;
               // Update insurance_invoice.receivedamt
               const invoiceResult = await new Promise((res, rej) => {
                 tempCon.query(
-                  // `UPDATE insurance_invoice
-                  //  SET receivedamt = ?, paymentdate= NOW()
-                  //  WHERE invoiceid = ?`,
-                  "SELECT * FROM insurance_invoice WHERE invoiceid = ?",
-                  [invoiceId],
-                  //[settledAmount, invoiceId],
+                  `UPDATE insurance_invoice
+                   SET receivedamt = ?, paymentdate= NOW()
+                   WHERE invoiceid = ? AND patientid = ?`,
+                  // "SELECT * FROM insurance_invoice WHERE invoiceid = ?  AND patientid = ?",
+                  // [invoiceId, patientId],
+                  [settledAmount, invoiceId, patientId],
                   (error, rows) => (error ? rej(error) : res(rows))
                 );
               });
-              //console.log("Update Result:", invoiceResult);
+              console.log("Update Result:", invoiceResult);
             }
           }
 
