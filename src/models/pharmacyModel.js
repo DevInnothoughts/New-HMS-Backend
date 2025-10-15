@@ -64,6 +64,7 @@ async function getPrescriptionsService(from, to, location) {
     grouped[key].medicines.push({
       medicine_id: row.medicine_id,
       medicine_name: row.medicine_name,
+      medicine_type: row.medicine_type,
       quantity: row.medicine_quantity,
       time: row.medicine_time,
       days: row.medicine_days,
@@ -95,7 +96,8 @@ async function getMedicinesService(location) {
   const query = `
     SELECT 
       medicine_id, 
-      name 
+      name,
+      medicine_type
     FROM medicine 
     WHERE is_deleted != 1
     ORDER BY name ASC
