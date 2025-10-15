@@ -29,12 +29,14 @@ async function getPrescriptionsService(from, to, location) {
       p.prescription_type,
       p.medicine_id,
       p.medicine_name,
+      m.medicine_type,
       p.medicine_quantity,
       p.medicine_time,
       p.medicine_days
     FROM prescription p
     LEFT JOIN doctor d ON d.doctor_id = p.doctor_id
     LEFT JOIN patient pt ON pt.patient_id = p.patient_id
+    LEFT JOIN medicine m ON m.medicine_id = p.medicine_id
     WHERE p.creation_timestamp >= ? 
       AND p.creation_timestamp <= ?
       AND p.is_deleted != 1

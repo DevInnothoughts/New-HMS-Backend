@@ -37,6 +37,7 @@ const conRajajiNagar = createPool("hmsRajajinagarDB");
 const conSarjapura = createPool("hmsSarjapuraDB");
 const conKatraj = createPool("hmsKatrajDB");
 const conLead = createPool("hhc_appointments");
+const conDemo = createPool("medixpress-demo");
 
 const getConnectionByLocation = (loc) => {
   console.log("Get Connection Of:", loc);
@@ -260,6 +261,11 @@ const getConnectionByLocation = (loc) => {
     case "lead":
       connection = conLead;
       location = "Lead";
+      break;
+
+    case "demo":
+      connection = conDemo;
+      location = "Demo";
       break;
 
     default:
