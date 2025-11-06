@@ -78,6 +78,45 @@ const providerMap = {
   HHC135: { locationName: "Lead", connection: conLead },
 };
 
+const insuranceCompanies = [
+  { id: 516571, name: "Aditya Birla Health Insurance Co. Limited" },
+  { id: 516572, name: "Medi Assist Insurance TPA India Pvt Ltd" },
+  { id: 522771, name: "MD India Healthcare (TPA) Services (Pvt.) Ltd." },
+  { id: 523192, name: "Heritage Health Insurance TPA Private Limited" },
+  { id: 523194, name: "Genins India Insurance TPA Limited" },
+  { id: 523195, name: "Health India Insurance TPA Services Private Limited" },
+  { id: 523196, name: "Safeway Insurance TPA Private Limited" },
+  { id: 523197, name: "Health Insurance TPA of India Limited" },
+  { id: 523207, name: "MedSave Health Insurance TPA Limited" },
+  { id: 523375, name: "GOOD HEALTH INSURANCE TPA LIMITED" },
+  { id: 523376, name: "Universal Sompo General Insurance Co Ltd" },
+  { id: 523377, name: "PARK MEDICLAIM TPA PVT LTD" },
+  { id: 523378, name: "Ericson Insurance TPA Pvt. Ltd" },
+  { id: 523677, name: "Raksha Health Insurance TPA Pvt Ltd" },
+  { id: 523678, name: "Vidal Health Insurance TPA Private Limited" },
+  {
+    id: 523679,
+    name: "Paramount Health Services & Insurance TPA Private Limited",
+  },
+  { id: 523680, name: "ICICI Lombard General Insurance" },
+  { id: 523681, name: "Family Health Plan Insurance TPA Limited" },
+  { id: 523843, name: "Bajaj Allianz General Insurance" },
+  { id: 523844, name: "HDFC ERGO General Insurance" },
+  { id: 523845, name: "Niva Bupa Health Insurance" },
+  { id: 523846, name: "Volo Health Insurance TPA Pvt Limited(East West)" },
+  { id: 523847, name: "Future Generali India Insurance Company (Corporate)" },
+  { id: 523848, name: "IFFCO-TOKIO General Insurance Co. Limited" },
+  { id: 523849, name: "Liberty General Insurance Limited" },
+  { id: 523850, name: "Reliance General Insurance Co. Ltd" },
+  { id: 523893, name: "Cholamandalam MS General Insurance" },
+  { id: 523894, name: "Star Health and Allied Insurance Co Ltd" },
+  { id: 524231, name: "Care Health Insurance" },
+  { id: 524232, name: "United Healthcare Parekh TPA Private Limited" },
+  { id: 524800, name: "Medvantage Insurance TPA Private Limited" },
+  { id: 526981, name: "Tata AIG General Insurance" },
+  { id: 526989, name: "SBI General Insurance" },
+];
+
 const getConnectionByProviderId = (providerId) => {
   const entry = providerMap[providerId];
 
@@ -89,6 +128,7 @@ const getConnectionByProviderId = (providerId) => {
 };
 
 async function searchPatient(providerID, uhid, mobile) {
+  console.log("searchPatient called with:", { providerID, uhid, mobile });
   const { connection } = getConnectionByProviderId("HHC000");
   if (!connection) {
     throw new Error("Invalid ProviderID");
@@ -138,7 +178,25 @@ async function searchPatient(providerID, uhid, mobile) {
         tempCon.release();
         if (error) return reject(error);
 
-        resolve(rows);
+        if (rows.length === 0) return resolve([]);
+
+        // ✅ Match with your insurance data
+        const enhancedRows = rows.map((row) => {
+          // Find matching insurance by name (case-insensitive)
+          const matchedInsurance = insuranceCompanies.find(
+            (ins) =>
+              ins.name.toLowerCase().trim() ===
+              (row.InsurerName || "").toLowerCase().trim()
+          );
+
+          // Add insurance company id if found
+          return {
+            ...row,
+            insurerId: matchedInsurance ? matchedInsurance.id : null,
+          };
+        });
+
+        resolve(enhancedRows);
       });
     });
   });

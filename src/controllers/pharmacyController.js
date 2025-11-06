@@ -6,24 +6,6 @@ const {
   getMedicinesService,
 } = require("../models/pharmacyModel");
 
-// Middleware to check AccessToken
-// router.use((req, res, next) => {
-//   const accessToken = req.headers["accesstoken"];
-//   if (
-//     !accessToken ||
-//     accessToken !== "76B3D4C3FEBA76666AB48416643B7B511AFDB70929A499"
-//   ) {
-//     return res.status(400).json({
-//       isSuccess: false,
-//       errorCode: "E101",
-//       errorMessage: "AccessToken does not exist or invalid in the API header",
-//       // identifier: uuidv4(),
-//       response: null,
-//     });
-//   }
-//   next();
-// });
-
 router.get("/v1/prescription", async (req, res) => {
   try {
     const { from, to, location } = req.query;
