@@ -62,6 +62,17 @@ function calculateAgeFromDOB(dobStr) {
   return age;
 }
 
+function convertToEpochIST(dateStr) {
+  // Split date (DD-MM-YYYY)
+  const [day, month, year] = dateStr.split("-").map(Number);
+
+  // Create Date object in IST (add GMT+0530)
+  const date = new Date(`${year}-${month}-${day}T00:00:00+05:30`);
+
+  // Return epoch in seconds
+  return Math.floor(date.getTime() / 1000);
+}
+
 router.post("/v1/PatientSearch", async (req, res) => {
   try {
     const { providerID } = req.body;
@@ -110,13 +121,13 @@ router.post("/v1/PatientSearch", async (req, res) => {
           mobileNumber: patient.phone || null,
           insurerName: patient.InsurerName || null,
           payerName: patient.PayerName || null,
-          payerId: patient.payerId || null,
-          insurerId: patient.insurerId || null,
+          payerId: `${patient.payerId}` || null,
+          insurerId: `${patient.insurerId}` || null,
           uhid: patient.uhid,
           ipNumber: patient.ipNumber,
           patientAge: calculateAgeFromDOB(patient.birth_date),
           patientGender: patient.sex || null,
-          dateOfBirth: patient.birth_date,
+          dateOfBirth: convertToEpochIST(patient.birth_date),
         },
         treatmentDetails: {
           dateOfAdmission: safeDateToMillis(patient.DateOfAdmission),
