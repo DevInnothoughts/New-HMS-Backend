@@ -63,14 +63,28 @@ function calculateAgeFromDOB(dobStr) {
 }
 
 function convertToEpochIST(dateStr) {
-  // Split date (DD-MM-YYYY)
-  const [day, month, year] = dateStr.split("-").map(Number);
+  //console.log("Converting date string to epoch IST:", dateStr);
+  if (!dateStr) return null;
 
-  // Create Date object in IST (add GMT+0530)
-  const date = new Date(`${year}-${month}-${day}T00:00:00+05:30`);
+  const parts = dateStr.split("-");
+  let day, month, year;
 
-  // Return epoch in seconds
-  return Math.floor(date.getTime() / 1000);
+  if (parts[0].length === 4) {
+    // Format: YYYY-MM-DD
+    [year, month, day] = parts.map(Number);
+  } else {
+    // Format: DD-MM-YYYY
+    [day, month, year] = parts.map(Number);
+  }
+
+  // ✅ Manually create UTC date and shift to IST
+  const utcDate = new Date(Date.UTC(year, month - 1, day)); // months are 0-based
+  const istOffsetMs = 5.5 * 60 * 60 * 1000; // IST offset (5 hours 30 minutes)
+  const istDate = new Date(utcDate.getTime() + istOffsetMs);
+
+  //console.log("Parsed IST date:", istDate);
+
+  return Math.floor(istDate.getTime() / 1000); // epoch seconds
 }
 
 router.post("/v1/PatientSearch", async (req, res) => {
