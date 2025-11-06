@@ -84,7 +84,7 @@ function convertToEpochIST(dateStr) {
 
   //console.log("Parsed IST date:", istDate);
 
-  return Math.floor(istDate.getTime() / 1000); // epoch seconds
+  return `${Math.floor(istDate.getTime() / 1000)}`; // epoch seconds
 }
 
 router.post("/v1/PatientSearch", async (req, res) => {
