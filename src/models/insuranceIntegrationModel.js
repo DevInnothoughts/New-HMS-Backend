@@ -189,10 +189,17 @@ async function searchPatient(providerID, uhid, mobile) {
               (row.InsurerName || "").toLowerCase().trim()
           );
 
+          const matchedTPA = insuranceCompanies.find(
+            (ins) =>
+              ins.name.toLowerCase().trim() ===
+              (row.PayerName || "").toLowerCase().trim()
+          );
+
           // Add insurance company id if found
           return {
             ...row,
             insurerId: matchedInsurance ? matchedInsurance.id : null,
+            payerId: matchedTPA ? matchedTPA.id : null,
           };
         });
 
