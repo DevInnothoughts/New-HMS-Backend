@@ -98,7 +98,7 @@ const insuranceCompanies = [
     id: 523679,
     name: "Paramount Health Services & Insurance TPA Private Limited",
   },
-  { id: 523680, name: "ICICI Lombard General Insurance" },
+  { id: 523680, name: "ICICI Lombard General Insurance Co Ltd" },
   { id: 523681, name: "Family Health Plan Insurance TPA Limited" },
   { id: 523843, name: "Bajaj Allianz General Insurance" },
   { id: 523844, name: "HDFC ERGO General Insurance" },
@@ -116,6 +116,786 @@ const insuranceCompanies = [
   { id: 526981, name: "Tata AIG General Insurance" },
   { id: 526989, name: "SBI General Insurance" },
 ];
+
+const payerInsurerMap = {
+  "Medi Assist Insurance TPA India Pvt Ltd": {
+    PayerId: "516572",
+    Insurers: [
+      { InsurerId: "1", InsurerName: "The New India Assurance Co. Ltd" },
+      { InsurerId: "2", InsurerName: "Reliance General Insurance Co. Ltd" },
+      { InsurerId: "4", InsurerName: "The Oriental Insurance Co. Ltd." },
+      { InsurerId: "5", InsurerName: "United India Insurance Co. Ltd" },
+      { InsurerId: "6", InsurerName: "National Insurance Co. Ltd." },
+      {
+        InsurerId: "7",
+        InsurerName: "ICICI Lombard General Insurance Co. Ltd.",
+      },
+      {
+        InsurerId: "8",
+        InsurerName: "Cholamandalam MS General Insurance Company Limited",
+      },
+      {
+        InsurerId: "9",
+        InsurerName: "Royal Sundaram General Insurance Company Limited",
+      },
+      { InsurerId: "10", InsurerName: "IFFCO-TOKIO General Insurance Co. Ltd" },
+      {
+        InsurerId: "11",
+        InsurerName: "HDFC Ergo General Insurance Company Limited",
+      },
+      { InsurerId: "13", InsurerName: "HDFC ERGO Health Insurance Ltd" },
+      {
+        InsurerId: "15",
+        InsurerName: "Bharti AXA General Insurance Company Limited",
+      },
+      { InsurerId: "16", InsurerName: "RELIANCE NIPPON LIFE INSURANCE CO LTD" },
+      { InsurerId: "17", InsurerName: "Care Health Insurance" },
+      {
+        InsurerId: "21",
+        InsurerName: "IndiaFirst Life Insurance Company Limited",
+      },
+      { InsurerId: "22", InsurerName: "MaxBupa Health Insurance Co.Ltd" },
+      {
+        InsurerId: "23",
+        InsurerName: "Bajaj Allianz General Insurance Co. Ltd.",
+      },
+      { InsurerId: "24", InsurerName: "SBI General Insurance Company Limited" },
+      { InsurerId: "25", InsurerName: "Liberty General Insurance Limited" },
+      { InsurerId: "26", InsurerName: "Others" },
+      {
+        InsurerId: "28",
+        InsurerName: "Aditya Birla Health Insurance Co. Limited",
+      },
+      {
+        InsurerId: "29",
+        InsurerName: "ManipalCigna Health Insurance Company Limited",
+      },
+      { InsurerId: "30", InsurerName: "Tata AIA Life Insurance" },
+      {
+        InsurerId: "32",
+        InsurerName: "Tata AIG General Insurance Company LTD",
+      },
+      { InsurerId: "33", InsurerName: "Shikhar Insurance Co Ltd" },
+      { InsurerId: "34", InsurerName: "Go Digit General Insurance Limited" },
+      {
+        InsurerId: "35",
+        InsurerName: "Raheja QBE General Insurance Company Limited",
+      },
+      {
+        InsurerId: "36",
+        InsurerName: "Magma HDI General Insurance Company LTD",
+      },
+      { InsurerId: "37", InsurerName: "Navi General Insurance Limited" },
+      {
+        InsurerId: "38",
+        InsurerName: "Edelweiss General Insurance Company Limited",
+      },
+      {
+        InsurerId: "39",
+        InsurerName: "Future Generali India Insurance Company Ltd.",
+      },
+    ],
+  },
+  "MDIndia Health Insurance TPA Pvt. Ltd.": {
+    PayerId: "522771",
+    Insurers: [
+      {
+        InsurerId: "1",
+        InsurerName: "Apollo Munich Insurance Company Limited",
+      },
+      {
+        InsurerId: "2",
+        InsurerName: "ICICI Lombard General Insurance Company",
+      },
+      {
+        InsurerId: "3",
+        InsurerName: "Future Generali India Insurance Company Limited",
+      },
+      { InsurerId: "4", InsurerName: "HDFC ERGO General Insurance Co." },
+      { InsurerId: "5", InsurerName: "IFFCO-TOKIO GENERAL INSURANCE CO. LTD." },
+      { InsurerId: "6", InsurerName: "Icici Lombard Insurance Company Ltd" },
+      { InsurerId: "7", InsurerName: "National Insurance Company Limited" },
+      { InsurerId: "8", InsurerName: "Reliance General Insurance" },
+      {
+        InsurerId: "9",
+        InsurerName: "Royal Sundaram Alliance Insurance Company Limited",
+      },
+      {
+        InsurerId: "10",
+        InsurerName: "The New India Assurance Company Limited",
+      },
+      { InsurerId: "11", InsurerName: "The Oriental Insurance Company Ltd" },
+      {
+        InsurerId: "12",
+        InsurerName: "United India Insurance Company Limited",
+      },
+      {
+        InsurerId: "13",
+        InsurerName: "Universal Sompo General Insurance Co. Ltd.",
+      },
+      { InsurerId: "14", InsurerName: "L&T General Insurance Company Ltd" },
+      { InsurerId: "15", InsurerName: "Sbi General Insurance Company Ltd" },
+      {
+        InsurerId: "16",
+        InsurerName: "Liberty Videocon General Insurance Company Ltd.",
+      },
+      { InsurerId: "17", InsurerName: "Care Health Insurance Limited" },
+      {
+        InsurerId: "18",
+        InsurerName: "Niva Bupa Health Insurance Company Limited",
+      },
+      { InsurerId: "19", InsurerName: "Bajaj Allianz" },
+      {
+        InsurerId: "20",
+        InsurerName: "Tata Aig General Insurance Company Limited",
+      },
+      { InsurerId: "21", InsurerName: "Aditya Birla Health Insurance Company" },
+      {
+        InsurerId: "22",
+        InsurerName: "Magma Hdi General Insurance Company Ltd.",
+      },
+      { InsurerId: "23", InsurerName: "Zuno General Insurance Limited" },
+      { InsurerId: "24", InsurerName: "Birla Sun Life" },
+      {
+        InsurerId: "25",
+        InsurerName: "ManipalCigna Health Insurance Company Limited",
+      },
+      {
+        InsurerId: "26",
+        InsurerName: "Cholamandalam Ms General Insurance Company Limited",
+      },
+      { InsurerId: "27", InsurerName: "Max Life Insurance Company Limited" },
+      { InsurerId: "28", InsurerName: "The New India Assurance Co. Ltd" },
+      { InsurerId: "29", InsurerName: "United India Insurance Co. Ltd" },
+      { InsurerId: "30", InsurerName: "National Insurance Co. Ltd." },
+      { InsurerId: "31", InsurerName: "The Oriental Insurance Co. Ltd." },
+      { InsurerId: "32", InsurerName: "National Insurance Company Ltd." },
+      { InsurerId: "33", InsurerName: "The New India Assurance Company Ltd." },
+      { InsurerId: "34", InsurerName: "The Oriental Insurance Company Ltd." },
+      { InsurerId: "35", InsurerName: "United India Insurance Company Ltd." },
+    ],
+  },
+  "Heritage Health Insurance TPA Private Limited": {
+    PayerId: "523192",
+    Insurers: [
+      { InsurerId: "1", InsurerName: "National Insurance Company Ltd." },
+      { InsurerId: "2", InsurerName: "The New India Assurance Company Ltd." },
+      { InsurerId: "3", InsurerName: "The Oriental Insurance Company Ltd." },
+      { InsurerId: "4", InsurerName: "United India Insurance Company Ltd." },
+    ],
+  },
+  "Genins India Insurance TPA Limited": {
+    PayerId: "523194",
+    Insurers: [
+      {
+        InsurerId: "1",
+        InsurerName: "National Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "2",
+        InsurerName: "The New India Assurance Company Ltd.",
+      },
+      {
+        InsurerId: "3",
+        InsurerName: "The Oriental Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "4",
+        InsurerName: "United India Insurance Company Ltd.",
+      },
+    ],
+  },
+  "Health India Insurance TPA Services Private Limited": {
+    PayerId: "523195",
+    Insurers: [
+      {
+        InsurerId: "1",
+        InsurerName: "National Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "2",
+        InsurerName: "The New India Assurance Company Ltd.",
+      },
+      {
+        InsurerId: "3",
+        InsurerName: "The Oriental Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "4",
+        InsurerName: "United India Insurance Company Ltd.",
+      },
+    ],
+  },
+  "Safeway Insurance TPA Private Limited": {
+    PayerId: "523196",
+    Insurers: [
+      {
+        InsurerId: "1",
+        InsurerName: "National Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "2",
+        InsurerName: "The New India Assurance Company Ltd.",
+      },
+      {
+        InsurerId: "3",
+        InsurerName: "The Oriental Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "4",
+        InsurerName: "United India Insurance Company Ltd.",
+      },
+    ],
+  },
+  "Health Insurance TPA of India Limited": {
+    PayerId: "523197",
+    Insurers: [
+      {
+        InsurerId: "1",
+        InsurerName: "National Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "2",
+        InsurerName: "The New India Assurance Company Ltd.",
+      },
+      {
+        InsurerId: "3",
+        InsurerName: "The Oriental Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "4",
+        InsurerName: "United India Insurance Company Ltd.",
+      },
+    ],
+  },
+  "Medsave Health Insurance TPA Limited": {
+    PayerId: "523207",
+    Insurers: [
+      { InsurerId: "1", InsurerName: "The New India Assurance Co. Ltd" },
+      { InsurerId: "2", InsurerName: "Reliance General Insurance Co. Ltd." },
+      { InsurerId: "3", InsurerName: "The Oriental Insurance Co. Ltd." },
+      { InsurerId: "4", InsurerName: "United India Insurance Co. Ltd" },
+      { InsurerId: "5", InsurerName: "National Insurance Co. Ltd." },
+      {
+        InsurerId: "6",
+        InsurerName: "ICICI Lombard General Insurance Co. Ltd.",
+      },
+      {
+        InsurerId: "7",
+        InsurerName: "Cholamandalam MS General Insurance Company Limited",
+      },
+      {
+        InsurerId: "8",
+        InsurerName: "Royal Sundaram General Insurance Company Limited",
+      },
+      { InsurerId: "9", InsurerName: "IFFCO-TOKIO General Insurance Co. Ltd" },
+      {
+        InsurerId: "10",
+        InsurerName: "HDFC Ergo General Insurance Company Limited",
+      },
+      { InsurerId: "11", InsurerName: "HDFC ERGO Health Insurance Ltd" },
+      {
+        InsurerId: "12",
+        InsurerName: "Bharti AXA General Insurance Company Limited",
+      },
+      { InsurerId: "13", InsurerName: "RELIANCE NIPPON LIFE INSURANCE CO LTD" },
+      { InsurerId: "14", InsurerName: "Care Health Insurance" },
+      {
+        InsurerId: "15",
+        InsurerName: "IndiaFirst Life Insurance Company Limited",
+      },
+      { InsurerId: "16", InsurerName: "MaxBupa Health Insurance Co.Ltd" },
+      {
+        InsurerId: "17",
+        InsurerName: "Bajaj Allianz General Insurance Co. Ltd.",
+      },
+      { InsurerId: "18", InsurerName: "SBI General Insurance Company Limited" },
+      { InsurerId: "19", InsurerName: "Liberty General Insurance Limited" },
+      { InsurerId: "20", InsurerName: "Others" },
+      {
+        InsurerId: "21",
+        InsurerName: "Aditya Birla Health Insurance Co. Limited",
+      },
+      {
+        InsurerId: "22",
+        InsurerName: "ManipalCigna Health Insurance Company Limited",
+      },
+      { InsurerId: "23", InsurerName: "Tata AIA Life Insurance" },
+      {
+        InsurerId: "24",
+        InsurerName: "Tata AIG General Insurance Company LTD",
+      },
+      { InsurerId: "25", InsurerName: "Shikhar Insurance Co Ltd" },
+      { InsurerId: "26", InsurerName: "Go Digit General Insurance Limited" },
+      {
+        InsurerId: "27",
+        InsurerName: "Raheja QBE General Insurance Company Limited",
+      },
+      {
+        InsurerId: "28",
+        InsurerName: "Magma HDI General Insurance Company LTD",
+      },
+      { InsurerId: "29", InsurerName: "Navi General Insurance Limited" },
+      {
+        InsurerId: "30",
+        InsurerName: "Edelweiss General Insurance Company Limited",
+      },
+    ],
+  },
+  "GOOD HEALTH INSURANCE TPA LIMITED": {
+    PayerId: "523375",
+    Insurers: [
+      {
+        InsurerId: "1",
+        InsurerName: "National Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "2",
+        InsurerName: "The New India Assurance Company Ltd.",
+      },
+      {
+        InsurerId: "3",
+        InsurerName: "The Oriental Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "4",
+        InsurerName: "United India Insurance Company Ltd.",
+      },
+    ],
+  },
+  "PARK MEDICLAIM TPA PVT LTD": {
+    PayerId: "523377",
+    Insurers: [
+      {
+        InsurerId: "1",
+        InsurerName: "National Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "2",
+        InsurerName: "The New India Assurance Company Ltd.",
+      },
+      {
+        InsurerId: "3",
+        InsurerName: "The Oriental Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "4",
+        InsurerName: "United India Insurance Company Ltd.",
+      },
+    ],
+  },
+  "Ericson Insurance TPA Pvt. Ltd": {
+    PayerId: "523378",
+    Insurers: [
+      {
+        InsurerId: "1",
+        InsurerName: "National Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "2",
+        InsurerName: "The New India Assurance Company Ltd.",
+      },
+      {
+        InsurerId: "3",
+        InsurerName: "The Oriental Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "4",
+        InsurerName: "United India Insurance Company Ltd.",
+      },
+    ],
+  },
+  "Raksha Health Insurance TPA Private Limited": {
+    PayerId: "523677",
+    Insurers: [
+      { InsurerId: "1", InsurerName: "The New India Assurance Co. Ltd" },
+      { InsurerId: "10", InsurerName: "IFFCO-TOKIO General Insurance Co. Ltd" },
+      {
+        InsurerId: "11",
+        InsurerName: "HDFC Ergo General Insurance Company Limited",
+      },
+      { InsurerId: "13", InsurerName: "HDFC ERGO Health Insurance Ltd" },
+      {
+        InsurerId: "15",
+        InsurerName: "Bharti AXA General Insurance Company Limited",
+      },
+      { InsurerId: "16", InsurerName: "RELIANCE NIPPON LIFE INSURANCE CO LTD" },
+      { InsurerId: "17", InsurerName: "Care Health Insurance" },
+      { InsurerId: "2", InsurerName: "Reliance General Insurance Co. Ltd." },
+      {
+        InsurerId: "21",
+        InsurerName: "IndiaFirst Life Insurance Company Limited",
+      },
+      { InsurerId: "22", InsurerName: "MaxBupa Health Insurance Co.Ltd" },
+      {
+        InsurerId: "23",
+        InsurerName: "Bajaj Allianz General Insurance Co. Ltd.",
+      },
+      { InsurerId: "24", InsurerName: "SBI General Insurance Company Limited" },
+      { InsurerId: "25", InsurerName: "Liberty General Insurance Limited" },
+      { InsurerId: "26", InsurerName: "Others" },
+      {
+        InsurerId: "28",
+        InsurerName: "Aditya Birla Health Insurance Co. Limited",
+      },
+      {
+        InsurerId: "29",
+        InsurerName: "ManipalCigna Health Insurance Company Limited",
+      },
+      { InsurerId: "30", InsurerName: "Tata AIA Life Insurance" },
+      {
+        InsurerId: "32",
+        InsurerName: "Tata AIG General Insurance Company LTD",
+      },
+      { InsurerId: "33", InsurerName: "Shikhar Insurance Co Ltd" },
+      { InsurerId: "34", InsurerName: "Go Digit General Insurance Limited" },
+      {
+        InsurerId: "35",
+        InsurerName: "Raheja QBE General Insurance Company Limited",
+      },
+      {
+        InsurerId: "36",
+        InsurerName: "Magma HDI General Insurance Company LTD",
+      },
+      { InsurerId: "37", InsurerName: "Navi General Insurance Limited" },
+      {
+        InsurerId: "38",
+        InsurerName: "Edelweiss General Insurance Company Limited",
+      },
+      { InsurerId: "4", InsurerName: "The Oriental Insurance Co. Ltd." },
+      { InsurerId: "5", InsurerName: "United India Insurance Co. Ltd" },
+      { InsurerId: "6", InsurerName: "National Insurance Co. Ltd." },
+      {
+        InsurerId: "7",
+        InsurerName: "ICICI Lombard General Insurance Co. Ltd.",
+      },
+      {
+        InsurerId: "8",
+        InsurerName: "Cholamandalam MS General Insurance Company Limited",
+      },
+      {
+        InsurerId: "9",
+        InsurerName: "Royal Sundaram General Insurance Company Limited",
+      },
+    ],
+  },
+  "Vidal Health Insurance TPA Private Limited": {
+    PayerId: "523678",
+    Insurers: [
+      { InsurerId: "1", InsurerName: "Acko General Insurance Limited" },
+      { InsurerId: "10", InsurerName: "HDFC Ergo General Insurance Co Ltd" },
+      { InsurerId: "11", InsurerName: "HDFC ERGO Health Insurance Ltd" },
+      {
+        InsurerId: "12",
+        InsurerName: "ICICI Lombard General Insurance Company Ltd",
+      },
+      { InsurerId: "13", InsurerName: "Iffco Tokio General Insurance Co. Ltd" },
+      {
+        InsurerId: "14",
+        InsurerName: "Kotak Mahindra General Insurance Company Ltd",
+      },
+      { InsurerId: "15", InsurerName: "L & T General Insurance Co. Ltd." },
+      { InsurerId: "16", InsurerName: "Liberty General Insurance Co.Ltd" },
+      {
+        InsurerId: "17",
+        InsurerName: "Magma HDI General Insurance Company Ltd",
+      },
+      { InsurerId: "18", InsurerName: "ManipalCigna Health Insurance Company" },
+      { InsurerId: "19", InsurerName: "National Insurance Co. Ltd" },
+      {
+        InsurerId: "2",
+        InsurerName: "Aditya Birla Health Insurance Company Ltd",
+      },
+      { InsurerId: "20", InsurerName: "NAVI General Insurance Company" },
+      { InsurerId: "21", InsurerName: "New India Assurance Co. Ltd" },
+      {
+        InsurerId: "22",
+        InsurerName: "Niva Bupa Health Insurance Company Limited",
+      },
+      { InsurerId: "23", InsurerName: "Oriental Insurance Co. Ltd" },
+      { InsurerId: "24", InsurerName: "Reliance General Insurance Co. Ltd" },
+      {
+        InsurerId: "25",
+        InsurerName: "Royal Sundaram Alliance Insurance Co. Ltd.",
+      },
+      { InsurerId: "26", InsurerName: "SBI General Insurance Co. Ltd" },
+      { InsurerId: "27", InsurerName: "Self Funded Scheme" },
+      { InsurerId: "28", InsurerName: "Tata AIG General Insurance Co. Ltd." },
+      { InsurerId: "29", InsurerName: "United India Insurance Co Ltd" },
+      {
+        InsurerId: "3",
+        InsurerName: "Aditya Birla Sun Life Insurance Company Ltd",
+      },
+      {
+        InsurerId: "30",
+        InsurerName: "Universal Sompo General Insurance Co.Ltd",
+      },
+      {
+        InsurerId: "4",
+        InsurerName: "Bajaj Allianz General Insurance Co. Ltd",
+      },
+      { InsurerId: "5", InsurerName: "Bharti AXA Insurance Co." },
+      { InsurerId: "6", InsurerName: "Care Health Insurance Ltd" },
+      {
+        InsurerId: "7",
+        InsurerName: "Cholamandalam MS General Insurance Company Limited",
+      },
+      {
+        InsurerId: "8",
+        InsurerName: "Edelweiss General Insurance Company Ltd",
+      },
+      {
+        InsurerId: "9",
+        InsurerName: "Go Digit General Insurance Company Limited",
+      },
+    ],
+  },
+  "Paramount Health Services & Insurance TPA Private Limited": {
+    PayerId: "523679",
+    Insurers: [
+      {
+        InsurerId: "1",
+        InsurerName: "Magma HDI General Insurance Company Limited",
+      },
+      { InsurerId: "10", InsurerName: "BAJAJ ALLIANZ" },
+      { InsurerId: "11", InsurerName: "Bharti AXA" },
+      { InsurerId: "12", InsurerName: "Care Health Insurance Company Limited" },
+      {
+        InsurerId: "13",
+        InsurerName: "Cholamandalam General Insurance Co Ltd",
+      },
+      {
+        InsurerId: "14",
+        InsurerName: "Future Generali India Insurance Company Ltd.",
+      },
+      { InsurerId: "16", InsurerName: "Go Digit General Insurance Ltd." },
+      { InsurerId: "17", InsurerName: "HDFC ERGO Health Insurance Ltd." },
+      {
+        InsurerId: "18",
+        InsurerName: "HDFC Ergo General Insurance Company Limited",
+      },
+      { InsurerId: "19", InsurerName: "HDFC Life Insurance company Limited" },
+      { InsurerId: "2", InsurerName: "Aegon Life Insurance Company Ltd." },
+      { InsurerId: "20", InsurerName: "ICICI Lombard" },
+      {
+        InsurerId: "21",
+        InsurerName: "IFFCO Tokio General Insurance Company Ltd.",
+      },
+      {
+        InsurerId: "22",
+        InsurerName: "Zurich  Kotak General Insurance Co. Ltd.",
+      },
+      {
+        InsurerId: "23",
+        InsurerName: "Zurich Kotak General Insurance Company(India) Limited",
+      },
+      { InsurerId: "24", InsurerName: "L&T GENERAL INSURANCE COMPANY LIMITED" },
+      { InsurerId: "25", InsurerName: "Reliance General Insurance Co. Ltd" },
+      {
+        InsurerId: "26",
+        InsurerName: "Royal Sundaram General Insurance Co Ltd",
+      },
+      { InsurerId: "27", InsurerName: "SBI General Insurance Company Ltd." },
+      {
+        InsurerId: "28",
+        InsurerName: "STAR HEALTH AND ALLIED INSURANCE COMPANY LTD.",
+      },
+      { InsurerId: "29", InsurerName: "Shriram General Insurance Co" },
+      {
+        InsurerId: "3",
+        InsurerName: "ManipalCigna Health Insurance Company Limited",
+      },
+      {
+        InsurerId: "30",
+        InsurerName: "Tata AIG General Insurance Company Ltd.",
+      },
+      { InsurerId: "31", InsurerName: "The New India Assurance Company Ltd." },
+      { InsurerId: "32", InsurerName: "The Oriental Insurance Company Ltd." },
+      { InsurerId: "33", InsurerName: "United India Insurance Company Ltd." },
+      {
+        InsurerId: "34",
+        InsurerName: "Universal Sompo General Insurance Company Ltd.",
+      },
+      { InsurerId: "35", InsurerName: "Zuno General Insurance Limited" },
+      {
+        InsurerId: "36",
+        InsurerName: "Aditya Birla Health Insurance Company Limited",
+      },
+      {
+        InsurerId: "37",
+        InsurerName: "LIBERTY GENERAL INSURANCE COMPANY LIMITED",
+      },
+      { InsurerId: "4", InsurerName: "Max Bupa" },
+      {
+        InsurerId: "5",
+        InsurerName: "Raheja QBE General Insurance Company Limited",
+      },
+      { InsurerId: "6", InsurerName: "Max Life Insurance Company" },
+      { InsurerId: "7", InsurerName: "National Insurance Company Ltd." },
+      { InsurerId: "8", InsurerName: "Navi General Insurance Ltd" },
+      { InsurerId: "9", InsurerName: "Niva Bupa Health Insurance Co. Ltd." },
+    ],
+  },
+  "Family Health Plan Insurance TPA Limited": {
+    PayerId: "523681",
+    Insurers: [
+      { InsurerId: "1", InsurerName: "Acko General Insurance Limited" },
+      {
+        InsurerId: "2",
+        InsurerName: "Aditya Birla Health Insurance Company Ltd",
+      },
+      {
+        InsurerId: "3",
+        InsurerName: "Aditya Birla Sun Life Insurance Company Ltd",
+      },
+      {
+        InsurerId: "4",
+        InsurerName: "Bajaj Allianz General Insurance Co. Ltd",
+      },
+      { InsurerId: "5", InsurerName: "Bharti AXA Insurance Co." },
+      { InsurerId: "6", InsurerName: "Care Health Insurance Ltd" },
+      {
+        InsurerId: "7",
+        InsurerName: "Cholamandalam MS General Insurance Company Limited",
+      },
+      {
+        InsurerId: "9",
+        InsurerName: "Go Digit General Insurance Company Limited",
+      },
+      { InsurerId: "10", InsurerName: "HDFC Ergo General Insurance Co Ltd" },
+      { InsurerId: "11", InsurerName: "HDFC ERGO Health Insurance Ltd" },
+      {
+        InsurerId: "12",
+        InsurerName: "ICICI Lombard General Insurance Company Ltd",
+      },
+      { InsurerId: "13", InsurerName: "Iffco Tokio General Insurance Co. Ltd" },
+      { InsurerId: "14", InsurerName: "Zurich Kotak General Insurance" },
+      { InsurerId: "15", InsurerName: "L & T General Insurance Co. Ltd." },
+      { InsurerId: "16", InsurerName: "Liberty General Insurance Co. Ltd" },
+      { InsurerId: "17", InsurerName: "Magma General Insurance Limited" },
+      { InsurerId: "18", InsurerName: "ManipalCigna Health Insurance Company" },
+      { InsurerId: "19", InsurerName: "National Insurance Co. Ltd" },
+      { InsurerId: "20", InsurerName: "NAVI General Insurance Company" },
+      { InsurerId: "21", InsurerName: "New India Assurance Co. Ltd" },
+      {
+        InsurerId: "22",
+        InsurerName: "Niva Bupa Health Insurance Company Limited",
+      },
+      { InsurerId: "23", InsurerName: "Oriental Insurance Co. Ltd" },
+      { InsurerId: "24", InsurerName: "Reliance General Insurance Co. Ltd" },
+      {
+        InsurerId: "25",
+        InsurerName: "Royal Sundaram Alliance Insurance Co. Ltd.",
+      },
+      { InsurerId: "26", InsurerName: "SBI General Insurance Co. Ltd" },
+      { InsurerId: "27", InsurerName: "Self Funded Scheme" },
+      { InsurerId: "28", InsurerName: "Tata AIG General Insurance Co. Ltd." },
+      { InsurerId: "29", InsurerName: "United India Insurance Co Ltd" },
+      {
+        InsurerId: "30",
+        InsurerName: "Universal Sompo General Insurance Co. Ltd",
+      },
+      { InsurerId: "31", InsurerName: "Star Health & Allied Insurance" },
+      { InsurerId: "32", InsurerName: "Zuno General Insurance Company Ltd" },
+      {
+        InsurerId: "33",
+        InsurerName: "Future Generali India Insurance Co. Ltd.",
+      },
+    ],
+  },
+  "Volo Health Insurance TPA Pvt Limited (East West)": {
+    PayerId: "523846",
+    Insurers: [
+      { InsurerId: "1", InsurerName: "National Insurance Company Ltd." },
+      { InsurerId: "2", InsurerName: "The New India Assurance Company Ltd." },
+      { InsurerId: "3", InsurerName: "The Oriental Insurance Company Ltd." },
+      { InsurerId: "4", InsurerName: "United India Insurance Company Ltd." },
+    ],
+  },
+  "Medvantage Insurance TPA Private Limited": {
+    PayerId: "524800",
+    Insurers: [
+      { InsurerId: "1", InsurerName: "The New India Assurance Co. Ltd" },
+      { InsurerId: "10", InsurerName: "IFFCO-TOKIO General Insurance Co. Ltd" },
+      {
+        InsurerId: "11",
+        InsurerName: "HDFC Ergo General Insurance Company Limited",
+      },
+      { InsurerId: "13", InsurerName: "HDFC ERGO Health Insurance Ltd" },
+      {
+        InsurerId: "15",
+        InsurerName: "Bharti AXA General Insurance Company Limited",
+      },
+      { InsurerId: "16", InsurerName: "RELIANCE NIPPON LIFE INSURANCE CO LTD" },
+      { InsurerId: "17", InsurerName: "Care Health Insurance" },
+      { InsurerId: "2", InsurerName: "Reliance General Insurance Co. Ltd." },
+      {
+        InsurerId: "21",
+        InsurerName: "IndiaFirst Life Insurance Company Limited",
+      },
+      { InsurerId: "22", InsurerName: "MaxBupa Health Insurance Co.Ltd" },
+      {
+        InsurerId: "23",
+        InsurerName: "Bajaj Allianz General Insurance Co. Ltd.",
+      },
+      { InsurerId: "24", InsurerName: "SBI General Insurance Company Limited" },
+      { InsurerId: "25", InsurerName: "Liberty General Insurance Limited" },
+      { InsurerId: "26", InsurerName: "Others" },
+      {
+        InsurerId: "28",
+        InsurerName: "Aditya Birla Health Insurance Co. Limited",
+      },
+      {
+        InsurerId: "29",
+        InsurerName: "ManipalCigna Health Insurance Company Limited",
+      },
+      { InsurerId: "30", InsurerName: "Tata AIA Life Insurance" },
+      {
+        InsurerId: "32",
+        InsurerName: "Tata AIG General Insurance Company LTD",
+      },
+      { InsurerId: "33", InsurerName: "Shikhar Insurance Co Ltd" },
+      { InsurerId: "34", InsurerName: "Go Digit General Insurance Limited" },
+      {
+        InsurerId: "35",
+        InsurerName: "Raheja QBE General Insurance Company Limited",
+      },
+      {
+        InsurerId: "36",
+        InsurerName: "Magma HDI General Insurance Company LTD",
+      },
+      { InsurerId: "37", InsurerName: "Navi General Insurance Limited" },
+      {
+        InsurerId: "38",
+        InsurerName: "Edelweiss General Insurance Company Limited",
+      },
+      { InsurerId: "4", InsurerName: "The Oriental Insurance Co. Ltd." },
+      { InsurerId: "5", InsurerName: "United India Insurance Co. Ltd" },
+      { InsurerId: "6", InsurerName: "National Insurance Co. Ltd." },
+      {
+        InsurerId: "7",
+        InsurerName: "ICICI Lombard General Insurance Co. Ltd.",
+      },
+      {
+        InsurerId: "8",
+        InsurerName: "Cholamandalam MS General Insurance Company Limited",
+      },
+      {
+        InsurerId: "9",
+        InsurerName: "Royal Sundaram General Insurance Company Limited",
+      },
+    ],
+  },
+  "ICICI Prudential": {
+    PayerId: "529911",
+    Insurers: [
+      { InsurerId: "1", InsurerName: "National Insurance Company Ltd." },
+      { InsurerId: "2", InsurerName: "The New India Assurance Company Ltd." },
+      { InsurerId: "3", InsurerName: "The Oriental Insurance Company Ltd." },
+      { InsurerId: "4", InsurerName: "United India Insurance Company Ltd." },
+    ],
+  },
+};
 
 const getConnectionByProviderId = (providerId) => {
   const entry = providerMap[providerId];
@@ -180,26 +960,66 @@ async function searchPatient(providerID, uhid, mobile) {
 
         if (rows.length === 0) return resolve([]);
 
-        // ✅ Match with your insurance data
         const enhancedRows = rows.map((row) => {
-          // Find matching insurance by name (case-insensitive)
-          const matchedInsurance = insuranceCompanies.find(
-            (ins) =>
-              ins.name.toLowerCase().trim() ===
-              (row.InsurerName || "").toLowerCase().trim()
-          );
+          let insurerId = null;
+          let payerId = null;
 
-          const matchedTPA = insuranceCompanies.find(
-            (ins) =>
-              ins.name.toLowerCase().trim() ===
-              (row.PayerName || "").toLowerCase().trim()
-          );
+          // Case 1: PayerName is null or 0 → use existing logic
+          if (!row.PayerName || row.PayerName === "0") {
+            const matchedInsurance = insuranceCompanies.find(
+              (ins) =>
+                ins.name.toLowerCase().trim() ===
+                (row.InsurerName || "").toLowerCase().trim()
+            );
 
-          // Add insurance company id if found
+            const matchedTPA = insuranceCompanies.find(
+              (ins) =>
+                ins.name.toLowerCase().trim() ===
+                (row.PayerName || "").toLowerCase().trim()
+            );
+
+            insurerId = matchedInsurance ? matchedInsurance.id : null;
+            payerId = matchedTPA ? matchedTPA.id : null;
+          }
+
+          // Case 2: PayerName exists → use payerInsurerMap
+          else if (payerInsurerMap[row.PayerName]) {
+            const payerData = payerInsurerMap[row.PayerName];
+            payerId = payerData.PayerId;
+
+            // Helper function to normalize insurer names
+            const normalize = (str) =>
+              (str || "")
+                .toLowerCase()
+                .replace(/[\.,]/g, "") // remove dots & commas
+                .replace(/\s+/g, " ") // collapse multiple spaces
+                .replace(/\bcompany\b/g, "co") // standardize "company" → "co"
+                .replace(/\blimited\b/g, "ltd") // standardize "limited" → "ltd"
+                .trim();
+
+            const insurerNameNormalized = normalize(row.InsurerName);
+
+            const matchedInsurer = payerData.Insurers.find((ins) => {
+              const mapNameNormalized = normalize(ins.InsurerName);
+              return insurerNameNormalized === mapNameNormalized;
+            });
+
+            console.log("Matching insurer:", {
+              payer: row.PayerName,
+              dbInsurerName: row.InsurerName,
+              normalizedDB: insurerNameNormalized,
+              matchedInsurer:
+                matchedInsurer?.InsurerName ||
+                "❌ No match (check punctuation/spacing)",
+            });
+
+            insurerId = matchedInsurer ? matchedInsurer.InsurerId : null;
+          }
+
           return {
             ...row,
-            insurerId: matchedInsurance ? matchedInsurance.id : null,
-            payerId: matchedTPA ? matchedTPA.id : null,
+            insurerId,
+            payerId,
           };
         });
 
