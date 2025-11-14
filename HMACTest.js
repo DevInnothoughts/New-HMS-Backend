@@ -80,8 +80,8 @@ class AESGCMUtil {
 }
 
 // 🔹 Demo usage
-const plainText =
-  '{"userName": "9730438137","password": "1321","invoiceNo": "123425345435","transactionAmount": "10","transactionType": "1","upiAddress": "9730304073@ybl","payerName": "Shubham","autoInitiateFlag": "N"}';
+const plainText = "HHCPL-IHX";
+//'{"userName": "9730438137","password": "1321","invoiceNo": "123425345435","transactionAmount": "10","transactionType": "1","upiAddress": "9730304073@ybl","payerName": "Shubham","autoInitiateFlag": "N"}';
 
 // Example 256-bit AES key (64 hex chars)
 const secretKeyHex =

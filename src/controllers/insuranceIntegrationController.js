@@ -4,6 +4,8 @@ const router = express.Router();
 const {
   searchPatient,
   savePatientStatusUpdate,
+  searchPatientProd,
+  savePatientStatusUpdateProd,
 } = require("../models/insuranceIntegrationModel");
 
 // Middleware to check AccessToken

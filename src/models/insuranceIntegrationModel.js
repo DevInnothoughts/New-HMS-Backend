@@ -1210,7 +1210,317 @@ async function savePatientStatusUpdate(payload) {
   });
 }
 
-module.exports = { searchPatient, savePatientStatusUpdate };
+async function searchPatientProd(providerID, uhid, mobile) {
+  console.log("searchPatient called with:", { providerID, uhid, mobile });
+  const { connection } = getConnectionByProviderId(providerID);
+  if (!connection) {
+    throw new Error("Invalid ProviderID");
+  }
+
+  return new Promise((resolve, reject) => {
+    connection.getConnection((err, tempCon) => {
+      if (err) return reject(err);
+
+      console.log("Searching Patient for ProviderID:", providerID);
+
+      let query = `
+        SELECT 
+          p.phone,
+          p.name,
+          p.age,
+          p.birth_date,
+          p.sex,
+          p.uid_no AS uhid,
+          ic.companyname AS InsurerName,
+          tpa.companyname AS PayerName,
+          inv.creation_date AS DateOfAdmission,
+          inv.due_date AS DateOfDischarge,
+          inv.admission_no AS ipNumber
+        FROM patient p
+        LEFT JOIN invoice inv ON p.patient_id = inv.patient_id
+        LEFT JOIN insurance_company ic ON inv.insurancecompany = ic.comapny_id
+        LEFT JOIN insurance_company tpa ON inv.tpa = tpa.comapny_id
+        WHERE p.ConfirmPatient = 1`;
+
+      const params = [];
+
+      if (uhid) {
+        query += " AND p.Uid_no = ?";
+        params.push(uhid);
+      }
+
+      if (mobile) {
+        query += " AND p.phone = ?";
+        params.push(mobile);
+      }
+
+      // Return only the latest invoice
+      query += " ORDER BY inv.creation_date DESC LIMIT 1";
+
+      tempCon.query(query, params, (error, rows) => {
+        tempCon.release();
+        if (error) return reject(error);
+
+        if (rows.length === 0) return resolve([]);
+
+        const enhancedRows = rows.map((row) => {
+          let insurerId = null;
+          let payerId = null;
+
+          // Case 1: PayerName is null or 0 → use existing logic
+          if (!row.PayerName || row.PayerName === "0") {
+            const matchedInsurance = insuranceCompanies.find(
+              (ins) =>
+                ins.name.toLowerCase().trim() ===
+                (row.InsurerName || "").toLowerCase().trim()
+            );
+
+            const matchedTPA = insuranceCompanies.find(
+              (ins) =>
+                ins.name.toLowerCase().trim() ===
+                (row.PayerName || "").toLowerCase().trim()
+            );
+
+            insurerId = matchedInsurance ? matchedInsurance.id : null;
+            payerId = matchedTPA ? matchedTPA.id : null;
+          }
+
+          // Case 2: PayerName exists → use payerInsurerMap
+          else if (payerInsurerMap[row.PayerName]) {
+            const payerData = payerInsurerMap[row.PayerName];
+            payerId = payerData.PayerId;
+
+            // Helper function to normalize insurer names
+            const normalize = (str) =>
+              (str || "")
+                .toLowerCase()
+                .replace(/[\.,]/g, "") // remove dots & commas
+                .replace(/\s+/g, " ") // collapse multiple spaces
+                .replace(/\bcompany\b/g, "co") // standardize "company" → "co"
+                .replace(/\blimited\b/g, "ltd") // standardize "limited" → "ltd"
+                .trim();
+
+            const insurerNameNormalized = normalize(row.InsurerName);
+
+            const matchedInsurer = payerData.Insurers.find((ins) => {
+              const mapNameNormalized = normalize(ins.InsurerName);
+              return insurerNameNormalized === mapNameNormalized;
+            });
+
+            console.log("Matching insurer:", {
+              payer: row.PayerName,
+              dbInsurerName: row.InsurerName,
+              normalizedDB: insurerNameNormalized,
+              matchedInsurer:
+                matchedInsurer?.InsurerName ||
+                "❌ No match (check punctuation/spacing)",
+            });
+
+            insurerId = matchedInsurer ? matchedInsurer.InsurerId : null;
+          }
+
+          return {
+            ...row,
+            insurerId,
+            payerId,
+          };
+        });
+
+        resolve(enhancedRows);
+      });
+    });
+  });
+}
+
+async function savePatientStatusUpdateProd(payload) {
+  const { hospitalID } = payload;
+  const { connection } = getConnectionByProviderId(hospitalID); //getConnectionByProviderId(hospitalID);
+
+  if (!connection) {
+    throw new Error("Invalid HospitalID / Provider");
+  }
+
+  return new Promise((resolve, reject) => {
+    connection.getConnection((err, tempCon) => {
+      if (err) return reject(err);
+
+      const {
+        uhid,
+        ipNumber,
+        mobileNumber,
+        statusId,
+        claimNumber,
+        statusName,
+        claimedAmount,
+        approvedAmount,
+        settledAmount,
+        utrNo,
+        remarks,
+      } = payload;
+
+      // Build dynamic WHERE condition based on available identifiers
+      const identifiers = [];
+      const identifierValues = [];
+
+      if (uhid) {
+        identifiers.push("uhid = ?");
+        identifierValues.push(uhid);
+      }
+      if (ipNumber) {
+        identifiers.push("ip_number = ?");
+        identifierValues.push(ipNumber);
+      }
+      if (mobileNumber) {
+        identifiers.push("mobile_number = ?");
+        identifierValues.push(mobileNumber);
+      }
+
+      if (identifiers.length === 0) {
+        return reject(new Error("At least one identifier must be provided"));
+      }
+
+      const whereClause = identifiers.join(" OR ");
+
+      // Build the new status update object
+      // const statusUpdateObject = {
+      //   timestamp: new Date().toISOString(),
+      //   statusId: statusId,
+      //   statusName: statusName,
+      //   claimNumber: claimNumber,
+      //   claimedAmount: claimedAmount,
+      //   approvedAmount: approvedAmount,
+      //   settledAmount: settledAmount,
+      //   utrNo: utrNo,
+      //   remarks: remarks,
+      // };
+
+      // Start transaction
+      tempCon.beginTransaction(async (err) => {
+        if (err) return reject(err);
+
+        try {
+          // Step 1: Update patient_status_updates JSON column
+          // const updateStatusSql = `
+          //   UPDATE patient_status_updates
+          //   SET status = JSON_ARRAY_APPEND(
+          //     IFNULL(status, JSON_ARRAY()),
+          //     '$',
+          //     CAST(? AS JSON)
+          //   )
+          //   WHERE ${whereClause}
+          // `;
+
+          // await new Promise((res, rej) => {
+          //   tempCon.query(
+          //     updateStatusSql,
+          //     [JSON.stringify(statusUpdateObject), ...identifierValues],
+          //     (error) => (error ? rej(error) : res())
+          //   );
+          // });
+
+          // Step 2: If ipNumber and settledAmount are provided, update insurance_invoice
+          let patientId, invoiceId;
+
+          if (ipNumber) {
+            // Fetch invoice using admission_no
+            const invoiceResult = await new Promise((res, rej) => {
+              tempCon.query(
+                `SELECT invoice_id, patient_id FROM invoice WHERE admission_no = ? LIMIT 1`,
+                [ipNumber],
+                (error, rows) => (error ? rej(error) : res(rows))
+              );
+            });
+            console.log(invoiceResult);
+            if (invoiceResult && invoiceResult.length > 0) {
+              invoiceId = invoiceResult[0].invoice_id;
+              patientId = invoiceResult[0].patient_id;
+            }
+          } else {
+            // Fetch patient_id using uhid or mobileNumber
+            if (uhid) {
+              const patientResult = await new Promise((res, rej) => {
+                tempCon.query(
+                  `SELECT patient_id FROM patient WHERE Uid_no = ? LIMIT 1`,
+                  [uhid],
+                  (error, rows) => (error ? rej(error) : res(rows))
+                );
+              });
+              console.log(patientResult);
+              if (patientResult && patientResult.length > 0) {
+                patientId = patientResult[0].patient_id;
+              }
+            } else if (mobileNumber) {
+              const patientResult = await new Promise((res, rej) => {
+                tempCon.query(
+                  `SELECT patient_id FROM patient WHERE phone = ? LIMIT 1`,
+                  [mobileNumber],
+                  (error, rows) => (error ? rej(error) : res(rows))
+                );
+              });
+              console.log(patientResult);
+              if (patientResult && patientResult.length > 0) {
+                patientId = patientResult[0].patient_id;
+              }
+            }
+
+            // Fetch invoice using patient_id
+            if (patientId) {
+              const invoiceResult = await new Promise((res, rej) => {
+                tempCon.query(
+                  `SELECT invoice_id FROM invoice WHERE patient_id = ? LIMIT 1`,
+                  [patientId],
+                  (error, rows) => (error ? rej(error) : res(rows))
+                );
+              });
+              console.log(invoiceResult);
+              if (invoiceResult && invoiceResult.length > 0) {
+                invoiceId = invoiceResult[0].invoice_id;
+              }
+            }
+          }
+
+          // Update insurance_invoice if possible
+          if (invoiceId && patientId && settledAmount != null) {
+            await new Promise((res, rej) => {
+              tempCon.query(
+                `UPDATE insurance_invoice
+                 SET receivedamt = ?, paymentdate = NOW()
+                 WHERE invoiceid = ? AND patientid = ?
+                 ORDER BY invoice_id DESC
+                 LIMIT 1`,
+                [settledAmount, invoiceId, patientId],
+                (error, rows) => (error ? rej(error) : res(rows))
+              );
+            });
+          }
+
+          // Commit transaction
+          tempCon.commit((err) => {
+            tempCon.release();
+            if (err) return reject(err);
+            resolve({
+              success: true,
+              message: "Patient status updated successfully",
+            });
+          });
+        } catch (e) {
+          // Rollback on error
+          tempCon.rollback(() => {
+            tempCon.release();
+            reject(e);
+          });
+        }
+      });
+    });
+  });
+}
+
+module.exports = {
+  searchPatient,
+  savePatientStatusUpdate,
+  searchPatientProd,
+  savePatientStatusUpdateProd,
+};
 
 //Sample response
 // [
