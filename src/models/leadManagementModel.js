@@ -347,7 +347,7 @@ async function saveReferredPatientDetails(Lead) {
 
       const values = [
         doctorsName,
-        dateTime,
+        new Date().toLocaleDateString("en-GB"),
         patientsName,
         doctorsContact,
         patientsContact,
