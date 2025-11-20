@@ -323,11 +323,11 @@ async function saveReferredPatientDetails(body) {
   console.log("Advertise Lead:", Lead.contact.variables);
   //let dateTime = Lead.date_time || "";
   let doctorsName = Lead.contact.name || "";
-  let patientsName = Lead.full_name || "";
-  let location = Lead.location || "";
+  let patientsName = Lead.contact.variables.Name || "";
+  let location = Lead.contact.variables.Location || "";
   let doctorsContact = Lead.contact.phone || "";
-  let patientsContact = Lead.phone || "";
-  let disease = Lead.disease || "";
+  let patientsContact = Lead.contact.variables.Contact || "";
+  let disease = Lead.contact.variables.Disease || "";
 
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
