@@ -320,7 +320,7 @@ async function saveAdvertiseLeads(Lead) {
 
 async function saveReferredPatientDetails(Lead) {
   console.log("Advertise Lead:", Lead);
-  let dateTime = Lead.date_time || "";
+  //let dateTime = Lead.date_time || "";
   let doctorsName = Lead.name || "";
   let patientsName = Lead.full_name || "";
   let location = Lead.location || "";
@@ -347,7 +347,7 @@ async function saveReferredPatientDetails(Lead) {
 
       const values = [
         doctorsName,
-        new Date().toLocaleDateString("en-GB"),
+        new Date(),
         patientsName,
         doctorsContact,
         patientsContact,
