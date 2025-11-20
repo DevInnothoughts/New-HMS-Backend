@@ -318,13 +318,14 @@ async function saveAdvertiseLeads(Lead) {
   });
 }
 
-async function saveReferredPatientDetails(Lead) {
-  console.log("Advertise Lead:", Lead);
+async function saveReferredPatientDetails(body) {
+  const Lead = body[0];
+  console.log("Advertise Lead:", Lead.contact.variables);
   //let dateTime = Lead.date_time || "";
-  let doctorsName = Lead.name || "";
+  let doctorsName = Lead.contact.name || "";
   let patientsName = Lead.full_name || "";
   let location = Lead.location || "";
-  let doctorsContact = Lead.contact || "";
+  let doctorsContact = Lead.contact.phone || "";
   let patientsContact = Lead.phone || "";
   let disease = Lead.disease || "";
 
