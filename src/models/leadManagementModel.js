@@ -371,10 +371,65 @@ async function saveReferredPatientDetails(body) {
   });
 }
 
+async function saveGPDetails(body) {
+  const Lead = body[0];
+  console.log("Lead:", Lead);
+  console.log("Advertise Lead:", Lead.contact.variables);
+  return;
+  //let dateTime = Lead.date_time || "";
+  let doctorsName = Lead.contact.name || "";
+  let location = Lead.contact.variables.Location || "";
+  let degree = Lead.contact.degree || "";
+  let doctorsContact = Lead.contact.phone || "";
+  let speciality = Lead.contact.variables.Disease || "";
+
+  const { connection } = getConnectionByLocation("lead");
+  if (!connection) {
+    const err = new Error("Invalid location at bot lead save function");
+    err.status = 404;
+    throw err;
+  }
+
+  return new Promise((resolve, reject) => {
+    connection.getConnection(function (err, tempCon) {
+      if (err) return reject(err);
+
+      const sql = `
+        INSERT INTO referredPatients 
+        (doctorsName, dateTime, patientsName, doctorsContact, patientsContact, disease, location)
+        VALUES ( ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      const values = [
+        doctorsName,
+        new Date(),
+        patientsName,
+        doctorsContact,
+        patientsContact,
+        disease,
+        location,
+      ];
+
+      console.log("Executing SQL:", sql, values);
+
+      tempCon.query(sql, values, function (error, result) {
+        tempCon.release();
+        if (error) {
+          console.log("Error while adding lead!");
+          return reject(error);
+        }
+        console.log("Referred patient Added!", result);
+        resolve("Referred patient Added!");
+      });
+    });
+  });
+}
+
 module.exports = {
   getLeads,
   updateStatus,
   saveBotLeads,
   saveAdvertiseLeads,
   saveReferredPatientDetails,
+  saveGPDetails,
 };
