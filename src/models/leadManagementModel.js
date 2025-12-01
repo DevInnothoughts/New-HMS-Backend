@@ -373,15 +373,14 @@ async function saveReferredPatientDetails(body) {
 
 async function saveGPDetails(body) {
   const Lead = body[0];
-  console.log("Lead:", Lead);
-  console.log("Advertise Lead:", Lead.contact.variables);
-  return;
+  //console.log("Lead:", Lead);
+  //console.log("Advertise Lead:", Lead.contact.variables);
   //let dateTime = Lead.date_time || "";
-  let doctorsName = Lead.contact.name || "";
-  let location = Lead.contact.variables.Location || "";
-  let degree = Lead.contact.degree || "";
+  let doctorsName = Lead.contact.variables["Doctor Name"] || "";
+  let location = Lead.contact.variables["Doctor Location"] || "";
+  let degree = Lead.contact.variables.Qualifications || "";
   let doctorsContact = Lead.contact.phone || "";
-  let speciality = Lead.contact.variables.Disease || "";
+  let speciality = Lead.contact.variables.Specialization || "";
 
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
@@ -395,18 +394,16 @@ async function saveGPDetails(body) {
       if (err) return reject(err);
 
       const sql = `
-        INSERT INTO referredPatients 
-        (doctorsName, dateTime, patientsName, doctorsContact, patientsContact, disease, location)
-        VALUES ( ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO GPData 
+        (doctorsName, phoneNumber, degree, speciality, location)
+        VALUES ( ?, ?, ?, ?, ?)
       `;
 
       const values = [
         doctorsName,
-        new Date(),
-        patientsName,
         doctorsContact,
-        patientsContact,
-        disease,
+        degree,
+        speciality,
         location,
       ];
 
@@ -418,8 +415,8 @@ async function saveGPDetails(body) {
           console.log("Error while adding lead!");
           return reject(error);
         }
-        console.log("Referred patient Added!", result);
-        resolve("Referred patient Added!");
+        console.log("GP Added!", result);
+        resolve("GP Added!");
       });
     });
   });
