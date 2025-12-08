@@ -320,6 +320,7 @@ async function saveAdvertiseLeads(Lead) {
 
 async function saveReferredPatientDetails(body) {
   const Lead = body[0];
+  console.log("Lead:", Lead);
   console.log("Advertise Lead:", Lead.contact.variables);
   //let dateTime = Lead.date_time || "";
   let doctorsName = Lead.contact.name || "";
