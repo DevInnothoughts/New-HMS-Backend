@@ -329,7 +329,7 @@ async function saveReferredPatientDetails(body) {
   let doctorsContact = Lead.contact.phone || "";
   let patientsContact = Lead.contact.variables.Contact || "";
   let disease = Lead.contact.variables.Disease || "";
-  let doc_url = Lead.contact.variables["last_message"] || "";
+  let doc_url = Lead.contact.variables["doc_url"] || "";
 
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
