@@ -328,6 +328,7 @@ async function saveReferredPatientDetails(body) {
   let doctorsContact = Lead.contact.phone || "";
   let patientsContact = Lead.contact.variables.Contact || "";
   let disease = Lead.contact.variables.Disease || "";
+  let doc_url = Lead.contact.variables["last_message"] || "";
 
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
@@ -342,8 +343,8 @@ async function saveReferredPatientDetails(body) {
 
       const sql = `
         INSERT INTO referredPatients 
-        (doctorsName, dateTime, patientsName, doctorsContact, patientsContact, disease, location)
-        VALUES ( ?, ?, ?, ?, ?, ?, ?)
+        (doctorsName, dateTime, patientsName, doctorsContact, patientsContact, disease, location, doc_url)
+        VALUES ( ?, ?, ?, ?, ?, ?, ?,?)
       `;
 
       const values = [
@@ -354,6 +355,7 @@ async function saveReferredPatientDetails(body) {
         patientsContact,
         disease,
         location,
+        doc_url,
       ];
 
       console.log("Executing SQL:", sql, values);
