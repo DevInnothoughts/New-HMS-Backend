@@ -376,8 +376,8 @@ async function saveReferredPatientDetails(body) {
 
 async function saveGPDetails(body) {
   const Lead = body[0];
-  //console.log("Lead:", Lead);
-  //console.log("Advertise Lead:", Lead.contact.variables);
+  console.log("Lead:", Lead);
+  console.log("Advertise Lead:", Lead.contact.variables);
   //let dateTime = Lead.date_time || "";
   let doctorsName = Lead.contact.variables["Doctor Name"] || "";
   let location = Lead.contact.variables["Doctor Location"] || "";
