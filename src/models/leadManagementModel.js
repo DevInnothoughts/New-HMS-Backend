@@ -376,14 +376,15 @@ async function saveReferredPatientDetails(body) {
 
 async function saveGPDetails(body) {
   const Lead = body[0];
-  console.log("Lead:", Lead);
-  console.log("Advertise Lead:", Lead.contact.variables);
+  //console.log("Lead:", Lead);
+  //console.log("Advertise Lead:", Lead.contact.variables);
   //let dateTime = Lead.date_time || "";
   let doctorsName = Lead.contact.variables["Doctor Name"] || "";
   let location = Lead.contact.variables["Doctor Location"] || "";
   let degree = Lead.contact.variables.Qualifications || "";
   let doctorsContact = Lead.contact.phone || "";
   let speciality = Lead.contact.variables.Specialization || "";
+  let pro = Lead.contact.variables.pro || "";
 
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
@@ -398,8 +399,8 @@ async function saveGPDetails(body) {
 
       const sql = `
         INSERT INTO GPData 
-        (doctorsName, phoneNumber, degree, speciality, location)
-        VALUES ( ?, ?, ?, ?, ?)
+        (doctorsName, phoneNumber, degree, speciality, location, pro)
+        VALUES ( ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
@@ -408,6 +409,7 @@ async function saveGPDetails(body) {
         degree,
         speciality,
         location,
+        pro,
       ];
 
       console.log("Executing SQL:", sql, values);
