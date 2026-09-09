@@ -40,15 +40,25 @@ async function saveMumbaiBotLeads(Lead) {
 
   const variables = leadData.contact.variables || {};
 
-  // SendPulse variable names arrive with spaces or underscores depending on flow setup
+  // Normalise keys once: lowercase, strip spaces/underscores/hyphens.
+  // "Chat on whatsapp", "Chat_on_Whatsapp", "chat on WhatsApp" -> "chatonwhatsapp"
+  const normKey = (k) =>
+    String(k)
+      .toLowerCase()
+      .replace(/[\s_-]+/g, "");
+  const normVars = {};
+  for (const k of Object.keys(variables)) {
+    const nk = normKey(k);
+    if (normVars[nk] === undefined || normVars[nk] === "") {
+      normVars[nk] = variables[k];
+    }
+  }
+
   const pick = (...keys) => {
     for (const k of keys) {
-      if (
-        variables[k] !== undefined &&
-        variables[k] !== null &&
-        variables[k] !== ""
-      ) {
-        return variables[k];
+      const v = normVars[normKey(k)];
+      if (v !== undefined && v !== null && String(v).trim() !== "") {
+        return String(v).trim();
       }
     }
     return "";
@@ -56,17 +66,9 @@ async function saveMumbaiBotLeads(Lead) {
 
   const name = pick("Name") || leadData.contact.name || "";
   const contact = pick("Phone", "Contact") || leadData.contact.phone || "";
-  const chatWhatsappBranch = pick(
-    "Chat on Whatsapp",
-    "Chat_on_Whatsapp",
-    "Chat on WhatsApp",
-  );
+  const chatWhatsappBranch = pick("Chat on Whatsapp");
   const query = pick("Query");
-  const preferredDateRaw = pick(
-    "Preferred Date",
-    "Preferred_Date",
-    "PreferredDate",
-  );
+  const preferredDateRaw = pick("Preferred Date");
   const preferredDateParsed = parsePreferredDate(preferredDateRaw);
 
   const { connection } = getConnectionByLocation("lead");
