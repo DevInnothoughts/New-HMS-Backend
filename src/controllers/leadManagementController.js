@@ -7,6 +7,7 @@ const {
   saveAdvertiseLeads,
   saveReferredPatientDetails,
   saveGPDetails,
+  saveMumbaiBotLeads,
 } = require("../models/leadManagementModel");
 
 router.get("/", async (req, res, next) => {
@@ -59,6 +60,15 @@ router.post("/gpDetails", async (req, res, next) => {
   try {
     const callingList = await saveGPDetails(req.body);
     res.status(200).send(callingList);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/mumbaiBotLeads", async (req, res, next) => {
+  try {
+    const result = await saveMumbaiBotLeads(req.body);
+    res.status(200).send(result);
   } catch (err) {
     next(err);
   }

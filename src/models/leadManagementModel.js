@@ -1,5 +1,122 @@
 const { getConnectionByLocation } = require("../../databaseUtils");
 
+// Parses common formats SendPulse sends. Returns 'YYYY-MM-DD' or null.
+function parsePreferredDate(raw) {
+  if (!raw) return null;
+  const value = String(raw).trim();
+
+  // YYYY-MM-DD or YYYY/MM/DD
+  let m = value.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if (m) {
+    return `${m[1]}-${String(m[2]).padStart(2, "0")}-${String(m[3]).padStart(2, "0")}`;
+  }
+
+  // DD-MM-YYYY or DD/MM/YYYY (Indian format — day first)
+  m = value.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+  if (m) {
+    return `${m[3]}-${String(m[2]).padStart(2, "0")}-${String(m[1]).padStart(2, "0")}`;
+  }
+
+  // Fallback: let JS try ("12 Oct 2026", ISO timestamps, etc.)
+  const d = new Date(value);
+  if (!isNaN(d.getTime())) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate(),
+    ).padStart(2, "0")}`;
+  }
+
+  return null;
+}
+
+async function saveMumbaiBotLeads(Lead) {
+  const leadData = Array.isArray(Lead) ? Lead[0] : Lead;
+  console.log("MUMBAI BOT LEAD:", JSON.stringify(leadData));
+
+  if (!leadData || !leadData.contact) {
+    const err = new Error("Invalid payload: contact object missing");
+    err.status = 400;
+    throw err;
+  }
+
+  const variables = leadData.contact.variables || {};
+
+  // SendPulse variable names arrive with spaces or underscores depending on flow setup
+  const pick = (...keys) => {
+    for (const k of keys) {
+      if (
+        variables[k] !== undefined &&
+        variables[k] !== null &&
+        variables[k] !== ""
+      ) {
+        return variables[k];
+      }
+    }
+    return "";
+  };
+
+  const name = pick("Name") || leadData.contact.name || "";
+  const contact = pick("Phone", "Contact") || leadData.contact.phone || "";
+  const chatWhatsappBranch = pick(
+    "Chat on Whatsapp",
+    "Chat_on_Whatsapp",
+    "Chat on WhatsApp",
+  );
+  const query = pick("Query");
+  const preferredDateRaw = pick(
+    "Preferred Date",
+    "Preferred_Date",
+    "PreferredDate",
+  );
+  const preferredDateParsed = parsePreferredDate(preferredDateRaw);
+
+  const { connection } = getConnectionByLocation("lead");
+  if (!connection) {
+    const err = new Error("Invalid location at mumbai bot lead save function");
+    err.status = 404;
+    throw err;
+  }
+
+  return new Promise((resolve, reject) => {
+    connection.getConnection(function (err, tempCon) {
+      if (err) return reject(err);
+
+      const sql = `
+        INSERT INTO chatbot_leads
+        (datetime, lead_source, name, location, branch, contact, email, disease,
+         chat_whatsapp_branch, consultation_type, query, preferred_date, preferred_date_parsed)
+        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      const values = [
+        "mumbai_chatbot", // lead_source flag
+        name,
+        "Mumbai", // location
+        "", // branch — not sent by this flow
+        contact,
+        "", // email — not sent by this flow
+        "", // disease — not sent by this flow
+        chatWhatsappBranch,
+        "", // consultation_type — not sent by this flow
+        query,
+        String(preferredDateRaw || ""),
+        preferredDateParsed,
+      ];
+
+      console.log("Executing SQL:", sql, values);
+
+      tempCon.query(sql, values, function (error, result) {
+        tempCon.release();
+        if (error) {
+          console.log("Error while adding Mumbai lead!");
+          return reject(error);
+        }
+        console.log("Mumbai Lead Added!", result.insertId);
+        resolve({ message: "Mumbai lead added!", id: result.insertId });
+      });
+    });
+  });
+}
+
 async function getLeads(location) {
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
@@ -233,6 +350,18 @@ async function saveBotLeads(Lead) {
     throw new Error("Unsupported lead service type.");
   }
 
+  let leadSource = "";
+
+  if (service === "live_chat") {
+    // ...existing assignments...
+    leadSource = "website_chatbot";
+  } else if (service === "whatsapp") {
+    // ...existing assignments...
+    leadSource = "whatsapp_chatbot";
+  } else {
+    throw new Error("Unsupported lead service type.");
+  }
+
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
     const err = new Error("Invalid location at bot lead save function");
@@ -246,11 +375,12 @@ async function saveBotLeads(Lead) {
 
       const sql = `
         INSERT INTO chatbot_leads 
-        (datetime, name, location, branch, contact, email, disease, chat_whatsapp_branch, consultation_type, query)
-        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (datetime,lead_source, name, location, branch, contact, email, disease, chat_whatsapp_branch, consultation_type, query)
+        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
+        leadSource,
         name,
         location,
         branch,
@@ -434,4 +564,5 @@ module.exports = {
   saveAdvertiseLeads,
   saveReferredPatientDetails,
   saveGPDetails,
+  saveMumbaiBotLeads,
 };
