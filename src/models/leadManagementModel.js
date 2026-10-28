@@ -28,6 +28,35 @@ function parsePreferredDate(raw) {
   return null;
 }
 
+// Reads a tracking variable SendPulse sends in contact.variables (utm_source,
+// utm_campaignid, ...). Key match ignores case, spaces, underscores and hyphens.
+// An unresolved "{{...}}" placeholder (visitor arrived without that UTM param)
+// or an empty value returns NULL. Values are capped at 100 chars.
+function extractTrackingVar(variables, names) {
+  const norm = (k) =>
+    String(k)
+      .toLowerCase()
+      .replace(/[\s_-]+/g, "");
+  const wanted = names.map(norm);
+  for (const key of Object.keys(variables || {})) {
+    if (!wanted.includes(norm(key))) continue;
+    const v = String(variables[key] ?? "").trim();
+    if (v && !/^\{\{.*\}\}$/.test(v)) return v.slice(0, 100);
+  }
+  return null;
+}
+
+// Campaign ID set in the bot's Start → Action block (variable: utm_campaignid).
+const extractCampaignId = (variables) =>
+  extractTrackingVar(variables, [
+    "utm_campaignid",
+    "utm_campaign",
+    "campaignid",
+  ]);
+
+const extractUtmSource = (variables) =>
+  extractTrackingVar(variables, ["utm_source"]);
+
 async function saveMumbaiBotLeads(Lead) {
   const leadData = Array.isArray(Lead) ? Lead[0] : Lead;
   console.log("MUMBAI BOT LEAD:", JSON.stringify(leadData));
@@ -70,6 +99,8 @@ async function saveMumbaiBotLeads(Lead) {
   const query = pick("Query");
   const preferredDateRaw = pick("Preferred Date");
   const preferredDateParsed = parsePreferredDate(preferredDateRaw);
+  const campaignId = extractCampaignId(variables);
+  const utmSource = extractUtmSource(variables);
 
   const { connection } = getConnectionByLocation("lead");
   if (!connection) {
@@ -85,8 +116,9 @@ async function saveMumbaiBotLeads(Lead) {
       const sql = `
         INSERT INTO chatbot_leads
         (datetime, lead_source, name, location, branch, contact, email, disease,
-         chat_whatsapp_branch, consultation_type, query, preferred_date, preferred_date_parsed)
-        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         chat_whatsapp_branch, consultation_type, query, preferred_date, preferred_date_parsed,
+         utm_campaign_id, utm_source)
+        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
@@ -102,6 +134,8 @@ async function saveMumbaiBotLeads(Lead) {
         query,
         String(preferredDateRaw || ""),
         preferredDateParsed,
+        campaignId,
+        utmSource,
       ];
 
       console.log("Executing SQL:", sql, values);
@@ -328,6 +362,9 @@ async function saveBotLeads(Lead) {
   let query = "";
   let email = "";
 
+  const campaignId = extractCampaignId(variables);
+  const utmSource = extractUtmSource(variables);
+
   if (service === "live_chat") {
     name = variables.Name || "";
     location = variables.Location || "";
@@ -377,8 +414,8 @@ async function saveBotLeads(Lead) {
 
       const sql = `
         INSERT INTO chatbot_leads 
-        (datetime,lead_source, name, location, branch, contact, email, disease, chat_whatsapp_branch, consultation_type, query)
-        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (datetime,lead_source, name, location, branch, contact, email, disease, chat_whatsapp_branch, consultation_type, query, utm_campaign_id, utm_source)
+        VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
@@ -392,6 +429,8 @@ async function saveBotLeads(Lead) {
         chatWhatsappBranch,
         consultationType,
         query,
+        campaignId,
+        utmSource,
       ];
 
       console.log("Executing SQL:", sql, values);
